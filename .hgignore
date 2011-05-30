@@ -1,7 +1,9 @@
-.DS_Store
-
 syntax: glob
+
 *.pyc
 *.pyo
 *.swp
 *.swo
+.DS_Store
+__pycache__
+
