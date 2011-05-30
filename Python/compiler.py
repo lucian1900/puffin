@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import ast
 
 class Codegen(ast.NodeVisitor):
@@ -43,7 +45,7 @@ class Codegen(ast.NodeVisitor):
     def visit_Call(self, node):
         if node.func.id == 'print':
             self.pir += 'say '
-            
+ 
             for i in node.args:
                 super().visit(i)
 
@@ -72,5 +74,16 @@ def pcompile(code):
     return c.code
 
 if __name__ == '__main__':
-    print(pcompile('a = 1 + 2'))
-
+    import os
+    import sys
+    
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], 'r') as f:
+            code = f.read()
+        
+        pir = pcompile(code)
+        
+        name = os.path.basename(sys.argv[1])
+        name.replace('.py', '.pir')
+        with open(name, 'w') as f:
+            f.write(pir)
