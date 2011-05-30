@@ -32,7 +32,6 @@ class Codegen(ast.NodeVisitor):
 
     def visit_Num(self, node):
         self.pir += str(node.n)
-        print(node)
 
     def visit_Expr(self, node):
         super().generic_visit(node)
@@ -69,5 +68,5 @@ def pcompile(code):
     return c.pir
 
 if __name__ == '__main__':
-    print(pcompile('print(2)'))
+    print(pcompile('a = 1 + 2'))
 
