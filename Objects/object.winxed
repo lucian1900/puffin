@@ -1,0 +1,10 @@
+namespace Python [HLL] {
+
+    class object {
+        var __dict__;
+        
+        function init() {
+            self.__dict__ = new Hash();
+        }
+    }  
+}
