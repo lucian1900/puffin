@@ -32,6 +32,7 @@ class Codegen(ast.NodeVisitor):
 
     def visit_Num(self, node):
         self.pir += str(node.n)
+        print(node)
 
     def visit_Expr(self, node):
         super().generic_visit(node)
@@ -39,15 +40,11 @@ class Codegen(ast.NodeVisitor):
     def visit_Call(self, node):
         if node.func.id == 'print':
             self.pir += 'say '
-
-            args = []
+            
             for i in node.args:
-                if hasattr(i, 'id'):
-                    args += i.id
-                elif hasattr(i, 'n'):
-                    args += str(i.n)
+                super().visit(i)
 
-            self.pir += ', '.join(args) + '\n'
+            self.pir += '\n'
 
     def visit_Assign(self, node):
         self.pir += '.local int {0}\n'.format(node.targets[0].id)
@@ -72,6 +69,5 @@ def pcompile(code):
     return c.pir
 
 if __name__ == '__main__':
-    #print(pcompile('a = 1+2;print(a)'))
     print(pcompile('print(2)'))
 
