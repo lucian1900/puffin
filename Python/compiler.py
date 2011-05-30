@@ -5,7 +5,11 @@ class Codegen(ast.NodeVisitor):
     def __init__(self):
         super().__init__()
 
-        self.pir = ""
+        self.pir = list()
+    
+    @property
+    def code(self):
+        return ''.join(self.pir)
 
     def generic_visit(self, node):
         print(type(node).__name__)
@@ -65,7 +69,7 @@ def pcompile(code):
     c = Codegen()
     c.visit(t)
 
-    return c.pir
+    return c.code
 
 if __name__ == '__main__':
     print(pcompile('a = 1 + 2'))
