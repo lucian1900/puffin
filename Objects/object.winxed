@@ -1,10 +1,85 @@
 namespace Python [HLL] {
 
-    class object {
+    class abstractobject {
         var __dict__;
+        var __class__;
+        var __bases__;
         
-        function init() {
-            self.__dict__ = new Hash();
+        function abstractobject() {
+            self.__dict__ = new 'Hash';
+            self.__bases__ = new 'ResizablePMCArray';
         }
-    }  
+
+        function getattr(string attr) {
+            return self.__class__.__dict__[attr];
+        }
+
+        function setattr(string attr, var value) {
+            self.__class__.__dict__[attr] = value;
+        }
+
+        function getaddr() {
+            int addr;
+            ${get_addr addr, self};
+            return addr;
+        }
+    }
+
+    class object : abstractobject {
+        var __name__;
+
+        function object(string name) {
+            self.abstractobject();
+
+            self.__name__ = name;            
+        }
+
+    }
+
+    class type : abstractobject {
+        var __name__;
+
+        function type(string name) {
+            self.abstractobject();
+
+            self.__name__ = name;
+            self.__class__ = self;
+
+            self.__dict__['__init__'] = function() {};
+            self.__dict__['__hash__'] = function(obj) {
+                return obj.getaddr();
+            };
+            self.__dict__['__repr__'] = function() {
+                return "<"+ string(self.__name__) +" object at "+
+                            string(self.getaddr()) +">";
+            };
+            self.__dict__['__str__'] = self.__dict__['__repr__'];
+
+
+        }
+    }
+
+    class instance : abstractobject {
+        function instance(var tp) {
+            self.abstractobject();
+
+            self.__class__ = tp;
+        }
+    }
+
+    function main() {
+        var t = new type('type');
+        say(t.getattr('__repr__')());
+    
+        var o = new object('object');
+        t.__bases__.push(o);
+
+        o.__class__ = t;
+
+        var i = new instance(o);
+        say(i.getattr('__repr__')());
+
+        load_bytecode('dumper.pbc');
+        _dumper(t.__name__);
+    }
 }
