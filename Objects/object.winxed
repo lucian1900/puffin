@@ -122,8 +122,8 @@ namespace Python [HLL] {
         var intb = new instance(inttype);
         intb.__class__.__dict__['__init__'](intb, 22);
 
-        var intc = inta.__dict__['__add__'](inta, intb);
-        //say(intc.__class__.__dict__['__repr__'](intc));
+        var intc = inta.__class__.__dict__['__add__'](inta, intb);
+        say(intc.__class__.__dict__['__repr__'](intc));
         
 
         //>>> tuple
