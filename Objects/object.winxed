@@ -50,12 +50,12 @@ namespace Python [HLL] {
                 return obj.getaddr();
             };
             self.__dict__['__repr__'] = function() {
-                return "<"+ string(self.__name__) +" object at "+
-                            string(self.getaddr()) +">";
+                var sb = new 'StringBuilder';
+                sb.append_format("<%0 object at %1>",
+                                 self.__name__, self.getaddr());
+                return string(sb);
             };
             self.__dict__['__str__'] = self.__dict__['__repr__'];
-
-
         }
     }
 
