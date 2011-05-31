@@ -77,9 +77,10 @@ namespace Python [HLL] {
         o.__class__ = t;
 
         var i = new instance(o);
-        say(i.getattr('__repr__')());
+        //say(i.getattr('__repr__')());
+        //say(i.getattr('__init__'));
 
-        load_bytecode('dumper.pbc');
-        _dumper(t.__name__);
+        //load_bytecode('dumper.pbc');
+        //_dumper(t.__name__);
     }
 }
