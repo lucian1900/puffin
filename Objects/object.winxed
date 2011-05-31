@@ -116,10 +116,13 @@ namespace Python [HLL] {
             ${elements length, obj.content};
             return length;
         };
-
+        
+        //>>> tupins = (1,2,3)
         var tupins = new instance(tup);
         tupins.__class__.__dict__['__getattribute__'](tupins, '__init__')(tupins, [1, 2, 3]);
+        //>>> tupins[0]
         say(tupins.__class__.__dict__['__getattribute__'](tupins, '__getitem__')(tupins, 0));
+        //>>> tupins.__len__()
         say(tupins.__class__.__dict__['__getattribute__'](tupins, '__len__')(tupins));
 
         //load_bytecode('dumper.pbc');
