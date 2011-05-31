@@ -10,10 +10,6 @@ namespace Python [HLL] {
             self.__bases__ = new 'ResizablePMCArray';
         }
 
-        function setattr(string attr, var value) {
-            self.__dict__[attr] = value;
-        }
-
         function getaddr() {
             int addr;
             ${get_addr addr, self};
@@ -28,31 +24,38 @@ namespace Python [HLL] {
             self.abstractobject();
 
             self.__name__ = name;
-            self.__class__ = self;
 
-            self.__dict__['__init__'] = function() {};
+            self.__dict__['__init__'] = function(obj) {};
+
             self.__dict__['__hash__'] = function(obj) {
                 return obj.getaddr();
             };
-            self.__dict__['__repr__'] = function() {
+            self.__dict__['__repr__'] = function(obj) {
                 var sb = new 'StringBuilder';
                 sb.append_format("<%0 object at %1>",
-                                 self.__name__, self.getaddr());
+                                 obj.__class__.__name__, obj.getaddr());
                 return string(sb);
             };
             self.__dict__['__str__'] = self.__dict__['__repr__'];
-        }
 
-        function getattr(string key) {
-            var attr = self.__dict__[key];
+            self.__dict__['__getattribute__'] = function(obj, key) {                
+                var attr = obj.__dict__[key];
+    
+                if(attr == null)
+                    attr = obj.__class__.__dict__[key];
+    
+                if(attr == null)
+                    for(var i in self.__bases__) {
+                        attr = i.__dict__[key];
+                        if(attr != null) break;
+                    }
 
-            if(attr == null)
-                for(var i in self.__bases__) {
-                    attr = i.__dict__[key];
-                    if(attr != null) break;
-                }
+                return attr;
+            };
 
-            return attr;
+            self.__dict__['__setattr__'] = function(obj, key, val) {
+                obj.__dict__[key] = val;
+            };
         }
     }
 
@@ -61,30 +64,23 @@ namespace Python [HLL] {
             self.abstractobject();
 
             self.__class__ = tp;
+            
+            self.__dict__ = new 'Hash';
         }
-
-        function getattr(string key) {
-            var attr = self.__dict__[key];
-
-            if(attr == null)
-                attr = self.__class__.getattr(key);
-
-            return attr;
-        }
-
-    }
+   }
 
     function main() {
         var t = new type('type'); // py type
-        //say(t.getattr('__repr__')());
+        t.__class__ = t;
     
         var o = new type('object'); // py object
+        o.__class__ = t;
+        
         t.__bases__.push(o);
 
-        o.__class__ = t;
 
         var i = new instance(o); // py object()
-        say(i.getattr('__repr__')());
+        say(i.__class__.__dict__['__getattribute__'](i, '__repr__')(i));
 
         //load_bytecode('dumper.pbc');
         //_dumper(t.__name__);
