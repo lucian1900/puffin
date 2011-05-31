@@ -6,8 +6,8 @@ namespace Python [HLL] {
         var __bases__;
         
         function abstractobject() {
-            self.__dict__ = new 'Hash';
-            self.__bases__ = new 'ResizablePMCArray';
+            self.__dict__ = {};
+            self.__bases__ = [];
         }
 
         function getaddr() {
@@ -17,13 +17,14 @@ namespace Python [HLL] {
         }
     }
 
-    class type : abstractobject {
+    class type : Python.abstractobject {
         var __name__;
 
-        function type(string name) {
+        function type(string name, var protoobject) {
             self.abstractobject();
 
             self.__name__ = name;
+            if(protoobject != null) self.__bases__.push(protoobject);
 
             self.__dict__['__init__'] = function(obj) {};
 
@@ -60,6 +61,8 @@ namespace Python [HLL] {
     }
 
     class instance : abstractobject {
+        var content;
+
         function instance(var tp) {
             self.abstractobject();
 
@@ -67,20 +70,57 @@ namespace Python [HLL] {
             
             self.__dict__ = new 'Hash';
         }
-   }
+    }
 
     function main() {
-        var t = new type('type'); // py type
-        t.__class__ = t;
-    
-        var o = new type('object'); // py object
-        o.__class__ = t;
+        //>>> object
+        var proto = new type('object', null); 
         
-        t.__bases__.push(o);
+        //>>> type
+        var t = new type('type', proto); 
+        t.__class__ = t;
+        proto.__class__ = t; // close the circle
 
+        //>>> type(lambda:None)
+        var f = new type('function', proto);
+        f.__class__ = t;
+        f.__dict__['__call__'] = function(){};
 
-        var i = new instance(o); // py object()
+        //>>> object()
+        var i = new instance(proto);
+
+        //>>> i.__repr__()
         say(i.__class__.__dict__['__getattribute__'](i, '__repr__')(i));
+        
+        //>>> def fn(): return 2
+        var fn = new instance(f); 
+        f.__dict__['__call__'] = function() {return 2;};
+        
+        //>>> fn()
+        say(f.__class__.__dict__['__getattribute__'](f, '__call__')());
+
+        //>>> tuple
+        var tup = new type('tuple', proto);
+        tup.__class__ = t;
+        tup.__dict__['__init__'] = function(obj, arr) {
+            obj.content = arr;
+        };
+        tup.__dict__['__getitem__'] = function(obj, index) {
+            //return obj.content[index]; // this confuses winxed
+            var item;
+            ${set item, obj.content [index]};
+            return item;
+        };
+        tup.__dict__['__len__'] = function(obj) {
+            int length;
+            ${elements length, obj.content};
+            return length;
+        };
+
+        var tupins = new instance(tup);
+        tupins.__class__.__dict__['__getattribute__'](tupins, '__init__')(tupins, [1, 2, 3]);
+        say(tupins.__class__.__dict__['__getattribute__'](tupins, '__getitem__')(tupins, 0));
+        say(tupins.__class__.__dict__['__getattribute__'](tupins, '__len__')(tupins));
 
         //load_bytecode('dumper.pbc');
         //_dumper(t.__name__);
