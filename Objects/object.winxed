@@ -1,155 +1,155 @@
 namespace Python [HLL] {
 
-    class abstractobject {
-        var __dict__;
-        var __class__;
-        var __bases__;
-        
-        function abstractobject() {
-            self.__dict__ = {};
-            self.__bases__ = [];
-        }
-
-        function getaddr() {
-            int addr;
-            ${get_addr addr, self};
-            return addr;
-        }
+class abstractobject {
+    var __dict__;
+    var __class__;
+    var __bases__;
+       
+    function abstractobject() {
+        self.__dict__ = {};
+        self.__bases__ = [];
     }
 
-    class type : Python.abstractobject {
-        var __name__;
-
-        function type(string name, var protoobject) {
-            self.abstractobject();
-
-            self.__name__ = name;
-            if(protoobject != null) self.__bases__.push(protoobject);
-
-            self.__dict__['__init__'] = function(obj) {};
-
-            self.__dict__['__hash__'] = function(obj) {
-                return obj.getaddr();
-            };
-            self.__dict__['__repr__'] = function(obj) {
-                var sb = new 'StringBuilder';
-                sb.append_format("<%0 object at %1>",
-                                 obj.__class__.__name__, obj.getaddr());
-                return string(sb);
-            };
-            self.__dict__['__str__'] = self.__dict__['__repr__'];
-
-            self.__dict__['__getattribute__'] = function(obj, key) {                
-                var attr = obj.__dict__[key];
-    
-                if(attr == null)
-                    attr = obj.__class__.__dict__[key];
-    
-                if(attr == null)
-                    for(var i in self.__bases__) {
-                        attr = i.__dict__[key];
-                        if(attr != null) break;
-                    }
-
-                return attr;
-            };
-
-            self.__dict__['__setattr__'] = function(obj, key, val) {
-                obj.__dict__[key] = val;
-            };
-        }
-    }
-
-    class instance : abstractobject {
-        var content;
-
-        function instance(var tp) {
-            self.abstractobject();
-
-            self.__class__ = tp;
-            
-            self.__dict__ = new 'Hash';
-        }
-    }
-
-    function main() {
-        //>>> object
-        var proto = new type('object', null); 
-        
-        //>>> type
-        var typetype = new type('type', proto); 
-        typetype.__class__ = typetype;
-        proto.__class__ = typetype; // close the circle
-
-        //>>> type(lambda:None)
-        var functype = new type('function', proto);
-        functype.__class__ = typetype;
-        functype.__dict__['__call__'] = function(){};
-
-        //>>> object()
-        var i = new instance(proto);
-
-        //>>> i.__repr__()
-        say(i.__class__.__dict__['__repr__'](i));
-        
-        //>>> def fn(): return 2
-        var fn = new instance(functype); 
-        functype.__dict__['__call__'] = function() {return 2;};
-        
-        //>>> fn()
-        say(fn.__class__.__dict__['__call__']());
-
-
-        //>>> int
-        var inttype = new type('int', proto);
-        
-        inttype.__dict__['__init__'] = function(obj, val) {
-            obj.content = val;
-        };
-        inttype.__dict__['__repr__'] = function(obj) {
-            return string(obj.content);
-        };
-        inttype.__dict__['__add__'] = function(obj, other) {
-            var result = new instance(inttype);
-            result.content = obj.content + other.content;
-            
-            return result;
-        };
-
-        var inta = new instance(inttype);
-        inta.__class__.__dict__['__init__'](inta, 20);
-        
-        var intb = new instance(inttype);
-        intb.__class__.__dict__['__init__'](intb, 22);
-
-        var intc = inta.__class__.__dict__['__add__'](inta, intb);
-        say(intc.__class__.__dict__['__repr__'](intc));
-        
-
-        //>>> tuple
-        var tup = new type('tuple', proto);
-        tup.__dict__['__init__'] = function(obj, arr) {
-            obj.content = arr;
-        };
-        tup.__dict__['__getitem__'] = function(obj, index) {
-            //return obj.content[index]; // this confuses winxed
-            var item;
-            ${set item, obj.content [index]};
-            return item;
-        };
-        tup.__dict__['__len__'] = function(obj) {
-            return elements(obj.content);
-        };
-        
-        //>>> tupins = (1,2,3)
-        var tupins = new instance(tup);
-        tupins.__class__.__dict__['__init__'](tupins, [1, 2, 3]);
-        //>>> tupins[0]
-        say(tupins.__class__.__dict__['__getitem__'](tupins, 0));
-        //>>> tupins.__len__()
-        say(tupins.__class__.__dict__['__len__'](tupins));
-
-        //load_bytecode('dumper.pbc');
-        //_dumper(t.__name__);
+    function getaddr() {
+        int addr;
+        ${get_addr addr, self};
+        return addr;
     }
 }
+
+class type : Python.abstractobject {
+    var __name__;
+
+    function type(string name, var protoobject) {
+        self.abstractobject();
+
+        self.__name__ = name;
+        if(protoobject != null) self.__bases__.push(protoobject);
+
+        self.__dict__['__init__'] = function(obj) {};
+
+        self.__dict__['__hash__'] = function(obj) {
+            return obj.getaddr();
+        };
+        self.__dict__['__repr__'] = function(obj) {
+            var sb = new 'StringBuilder';
+            sb.append_format("<%0 object at %1>",
+                             obj.__class__.__name__, obj.getaddr());
+            return string(sb);
+        };
+        self.__dict__['__str__'] = self.__dict__['__repr__'];
+
+        self.__dict__['__getattribute__'] = function(obj, key) {                
+            var attr = obj.__dict__[key];
+
+            if(attr == null)
+                attr = obj.__class__.__dict__[key];
+
+            if(attr == null)
+                for(var i in self.__bases__) {
+                    attr = i.__dict__[key];
+                    if(attr != null) break;
+                }
+
+            return attr;
+        };
+
+        self.__dict__['__setattr__'] = function(obj, key, val) {
+            obj.__dict__[key] = val;
+        };
+    }
+}
+
+class instance : abstractobject {
+    var content;
+
+    function instance(var tp) {
+        self.abstractobject();
+
+        self.__class__ = tp;
+        
+        self.__dict__ = new 'Hash';
+    }
+}
+
+function main() {
+    //>>> object
+    var proto = new type('object', null); 
+    
+    //>>> type
+    var typetype = new type('type', proto); 
+    typetype.__class__ = typetype;
+    proto.__class__ = typetype; // close the circle
+
+    //>>> type(lambda:None)
+    var functype = new type('function', proto);
+    functype.__class__ = typetype;
+    functype.__dict__['__call__'] = function(){};
+
+    //>>> object()
+    var i = new instance(proto);
+
+    //>>> i.__repr__()
+    say(i.__class__.__dict__['__repr__'](i));
+    
+    //>>> def fn(): return 2
+    var fn = new instance(functype); 
+    functype.__dict__['__call__'] = function() {return 2;};
+    
+    //>>> fn()
+    say(fn.__class__.__dict__['__call__']());
+
+
+    //>>> int
+    var inttype = new type('int', proto);
+    
+    inttype.__dict__['__init__'] = function(obj, val) {
+        obj.content = val;
+    };
+    inttype.__dict__['__repr__'] = function(obj) {
+        return string(obj.content);
+    };
+    inttype.__dict__['__add__'] = function(obj, other) {
+        var result = new instance(inttype);
+        result.content = obj.content + other.content;
+        return result;
+    };
+
+    var inta = new instance(inttype);
+    inta.__class__.__dict__['__init__'](inta, 20);
+    
+    var intb = new instance(inttype);
+    intb.__class__.__dict__['__init__'](intb, 22);
+
+    var intc = inta.__class__.__dict__['__add__'](inta, intb);
+    say(intc.__class__.__dict__['__repr__'](intc));
+
+
+    //>>> tuple
+    var tup = new type('tuple', proto);
+    tup.__dict__['__init__'] = function(obj, arr) {
+        obj.content = arr;
+    };
+    tup.__dict__['__getitem__'] = function(obj, index) {
+        //return obj.content[index]; // this confuses winxed
+        var item;
+        ${set item, obj.content [index]};
+        return item;
+    };
+    tup.__dict__['__len__'] = function(obj) {
+        return elements(obj.content);
+    };
+       
+    //>>> tupins = (1,2,3)
+    var tupins = new instance(tup);
+    tupins.__class__.__dict__['__init__'](tupins, [1, 2, 3]);
+    //>>> tupins[0]
+    say(tupins.__class__.__dict__['__getitem__'](tupins, 0));
+    //>>> tupins.__len__()
+    say(tupins.__class__.__dict__['__len__'](tupins));
+
+    //load_bytecode('dumper.pbc');
+    //_dumper(t.__name__);
+}
+
+} // namespace
