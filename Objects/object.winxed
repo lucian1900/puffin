@@ -10,12 +10,8 @@ namespace Python [HLL] {
             self.__bases__ = new 'ResizablePMCArray';
         }
 
-        function getattr(string attr) {
-            return self.__class__.__dict__[attr];
-        }
-
         function setattr(string attr, var value) {
-            self.__class__.__dict__[attr] = value;
+            self.__dict__[attr] = value;
         }
 
         function getaddr() {
@@ -23,17 +19,6 @@ namespace Python [HLL] {
             ${get_addr addr, self};
             return addr;
         }
-    }
-
-    class object : abstractobject {
-        var __name__;
-
-        function object(string name) {
-            self.abstractobject();
-
-            self.__name__ = name;            
-        }
-
     }
 
     class type : abstractobject {
@@ -57,6 +42,18 @@ namespace Python [HLL] {
             };
             self.__dict__['__str__'] = self.__dict__['__repr__'];
         }
+
+        function getattr(string key) {
+            var attr = self.__dict__[key];
+
+            if(attr == null)
+                for(var i in self.__bases__) {
+                    attr = i.__dict__[key];
+                    if(attr != null) break;
+                }
+
+            return attr;
+        }
     }
 
     class instance : abstractobject {
@@ -65,20 +62,29 @@ namespace Python [HLL] {
 
             self.__class__ = tp;
         }
+
+        function getattr(string key) {
+            var attr = self.__dict__[key];
+
+            if(attr == null)
+                attr = self.__class__.getattr(key);
+
+            return attr;
+        }
+
     }
 
     function main() {
-        var t = new type('type');
-        say(t.getattr('__repr__')());
+        var t = new type('type'); // py type
+        //say(t.getattr('__repr__')());
     
-        var o = new object('object');
+        var o = new type('object'); // py object
         t.__bases__.push(o);
 
         o.__class__ = t;
 
-        var i = new instance(o);
-        //say(i.getattr('__repr__')());
-        //say(i.getattr('__init__'));
+        var i = new instance(o); // py object()
+        say(i.getattr('__repr__')());
 
         //load_bytecode('dumper.pbc');
         //_dumper(t.__name__);
