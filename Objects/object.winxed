@@ -77,31 +77,57 @@ namespace Python [HLL] {
         var proto = new type('object', null); 
         
         //>>> type
-        var t = new type('type', proto); 
-        t.__class__ = t;
-        proto.__class__ = t; // close the circle
+        var typetype = new type('type', proto); 
+        typetype.__class__ = typetype;
+        proto.__class__ = typetype; // close the circle
 
         //>>> type(lambda:None)
-        var f = new type('function', proto);
-        f.__class__ = t;
-        f.__dict__['__call__'] = function(){};
+        var functype = new type('function', proto);
+        functype.__class__ = typetype;
+        functype.__dict__['__call__'] = function(){};
 
         //>>> object()
         var i = new instance(proto);
 
         //>>> i.__repr__()
-        say(i.__class__.__dict__['__getattribute__'](i, '__repr__')(i));
+        say(i.__class__.__dict__['__repr__'](i));
         
         //>>> def fn(): return 2
-        var fn = new instance(f); 
-        f.__dict__['__call__'] = function() {return 2;};
+        var fn = new instance(functype); 
+        functype.__dict__['__call__'] = function() {return 2;};
         
         //>>> fn()
-        say(f.__class__.__dict__['__getattribute__'](f, '__call__')());
+        say(fn.__class__.__dict__['__call__']());
+
+
+        //>>> int
+        var inttype = new type('int', proto);
+        
+        inttype.__dict__['__init__'] = function(obj, val) {
+            obj.content = val;
+        };
+        inttype.__dict__['__repr__'] = function(obj) {
+            return string(obj.content);
+        };
+        inttype.__dict__['__add__'] = function(obj, other) {
+            var result = new instance(inttype);
+            result.content = obj.content + other.content;
+            
+            return result;
+        };
+
+        var inta = new instance(inttype);
+        inta.__class__.__dict__['__init__'](inta, 20);
+        
+        var intb = new instance(inttype);
+        intb.__class__.__dict__['__init__'](intb, 22);
+
+        var intc = inta.__dict__['__add__'](inta, intb);
+        //say(intc.__class__.__dict__['__repr__'](intc));
+        
 
         //>>> tuple
         var tup = new type('tuple', proto);
-        tup.__class__ = t;
         tup.__dict__['__init__'] = function(obj, arr) {
             obj.content = arr;
         };
@@ -112,18 +138,16 @@ namespace Python [HLL] {
             return item;
         };
         tup.__dict__['__len__'] = function(obj) {
-            int length;
-            ${elements length, obj.content};
-            return length;
+            return elements(obj.content);
         };
         
         //>>> tupins = (1,2,3)
         var tupins = new instance(tup);
-        tupins.__class__.__dict__['__getattribute__'](tupins, '__init__')(tupins, [1, 2, 3]);
+        tupins.__class__.__dict__['__init__'](tupins, [1, 2, 3]);
         //>>> tupins[0]
-        say(tupins.__class__.__dict__['__getattribute__'](tupins, '__getitem__')(tupins, 0));
+        say(tupins.__class__.__dict__['__getitem__'](tupins, 0));
         //>>> tupins.__len__()
-        say(tupins.__class__.__dict__['__getattribute__'](tupins, '__len__')(tupins));
+        say(tupins.__class__.__dict__['__len__'](tupins));
 
         //load_bytecode('dumper.pbc');
         //_dumper(t.__name__);
