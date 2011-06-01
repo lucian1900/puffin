@@ -1,0 +1,21 @@
+namespace Python [HLL] {
+
+class dict : type {
+    function dict(env) {
+        self.type('dict', env.object);
+
+        self.__dict__['__init__'] = function(obj) {
+            obj.content = new 'Hash';
+        };
+
+        self.__dict__['__getitem__'] = function(obj, key) {
+            return obj.content[key];
+        };
+
+        self.__dict__['__setitem__'] = function(obj, key, val) {
+            obj.content[key] = val;
+        };
+    }
+}
+
+}

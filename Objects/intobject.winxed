@@ -1,0 +1,21 @@
+namespace Python [HLL] {
+
+class int : type {
+    function int(env) {
+        self.type('int', env.object);
+
+        self.__dict__['__init__'] = function(obj, val) {
+            obj.content = val;
+        };
+        self.__dict__['__repr__'] = function(obj) {
+            return string(obj.content);
+        };
+        self.__dict__['__add__'] = function(obj, other) {
+            var result = self.new();
+            result.content = obj.content + other.content;
+            return result;
+        };
+    }
+}
+
+}

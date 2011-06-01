@@ -1,0 +1,16 @@
+namespace Python [HLL] {
+
+class function : type {
+    function function(env) {
+        self.type('function', env.object);
+
+        self.__dict__['__call__'] = function(){};
+
+        // for turning functions into bound methods 
+        self.__dict__['__get__'] = function(obj, cls) {
+            
+        };
+    }
+}
+
+}
