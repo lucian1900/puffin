@@ -81,6 +81,9 @@ class instance {
     }
 
     //TODO find_method, invoke, get/set_attr_str
+    function find_method[vtable](string name) {
+        
+    }
 }
 
 class int : type {
