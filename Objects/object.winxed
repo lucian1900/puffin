@@ -79,11 +79,40 @@ class instance {
     function set(key, val) {
         self.__class__.__dict__['__setattr__'](self, key, val);
     }
-
-    //TODO find_method, invoke, get/set_attr_str
-    function find_method[vtable](string name) {
-        
+ 
+    //TODO find_method, invoke
+    //function find_method[vtable](string name) {}
+    
+    function get_pmc_keyed_str[vtable,nsentry](string name) {
+        var __class__;
+        var insclass = class Python.instance;
+        ${ getattribute __class__, self, insclass, '__class__' };
+        return __class__.__dict__['__getattribute__'](self, name);
     }
+
+     
+    function set_pmc_keyed_str[vtable,nsentry](string name, var value) {
+        var __class__;
+        var insclass = class Python.instance;
+        ${ getattribute __class__, self, insclass, '__class__' };
+        __class__.__dict__['__setattr__'](self, name, value);
+    }
+    
+    // mirrors
+    function get_attr_str[vtable](string name) {
+        using Python.instance.get_pmc_keyed_str;
+        return self.*get_pmc_keyed_str(name);
+    }
+    function set_attr_str[vtable](string name, var value) {
+        self.set_pmc_keyed_str(name, value);
+    }
+    function get_pmc_keyed[vtable](var name) {
+        return self.get_pmc_keyed_str(name);
+    }
+    function set_pmc_keyed[vtable](var name, var value) {
+        self.set_pmc_keyed_str(name, value);
+    }
+    
 }
 
 class int : type {
@@ -189,7 +218,7 @@ class function : type {
 
 class BaseException : type {
     function BaseException(env) {
-        self.BaseException('BaseException', env.object);
+        self.type('BaseException', env.object);
         
         self.__dict__['__init__'] = function(obj) {
             obj.content = new 'Exception';
@@ -234,42 +263,42 @@ function main() {
     var e = new Python.core();
    
     //>>> object()
-    var i = e.object.new();
+    //var i = e.object.new();
 
     //>>> i.__repr__()
-    say(i.get('__repr__')(i));
+    //say(i.get('__repr__')(i));
     
 
     //>>> def fn(): return 2
-    var fn = e.function.new(); 
-    fn.set('__call__', function() {return 2;});
+    //var fn = e.function.new(); 
+    //fn.set('__call__', function() {return 2;});
     
     //>>> fn()
-    say(fn.get('__call__')());
+    //say(fn.get('__call__')());
 
 
     //>>> a = 20
-    var a = e.int.new();
-    a.get('__init__')(a, 20);
+    //var a = e.int.new();
+    //a.get('__init__')(a, 20);
     
     //>>> b = 22
-    var b = e.int.new();
-    b.get('__init__')(b, 22);
+    //var b = e.int.new();
+    //b.get('__init__')(b, 22);
     
     //>>> a + b
-    var c = a.get('__add__')(a, b);
-    say(c.get('__repr__')(c));
+    //var c = a.get('__add__')(a, b);
+    //say(c.get('__repr__')(c));
 
 
     //>>> tupins = (1,2,3)
-    var t = e.tuple.new();
-    t.get('__init__')(t, [1, 2, 3]);
+    //var t = e.tuple.new();
+    //t.get('__init__')(t, [1, 2, 3]);
 
     //>>> tupins[0]
-    say(t.get('__getitem__')(t, 0));
+    //say(t.get('__getitem__')(t, 0));
 
     //>>> tupins.__len__()
-    say(t.get('__len__')(t));
+    //say(t.get('__len__')(t));
 
     //load_bytecode('dumper.pbc');
     //_dumper(t.__name__);
