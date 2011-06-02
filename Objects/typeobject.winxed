@@ -23,11 +23,13 @@ class instance {
 class type : instance {
     var __name__;
     var __bases__;
+    var __module__;
 
     function type(string name, var cls, var bases[slurpy]) {
         self.__name__ = name;
         self.__bases__ = bases;
         self.__class__ = cls;
+        self.__module__ = 'builtins';
 
 
         self.__dict__ = {};
@@ -45,10 +47,13 @@ class type : instance {
         self.__dict__['__repr__'] = function(obj) {
             var sb = new 'StringBuilder';
             if(obj.__class__.__name__ == 'type')
-                sb.append_format("<class '%0'>", obj.__name__);
+                if(obj.__module__ == 'builtins')
+                    sb.append_format("<class '%0'>", obj.__name__);
+                else
+                    sb.append_format("<class '%0.%1'>", obj.__module__, obj.__name__);
             else
-                sb.append_format("<%0 object at %1>",
-                                 obj.__class__.__name__, getaddr(obj));
+                sb.append_format("<%0.%1 object at %2>",
+                                 obj.__class__.module, obj.__class__.__name__, getaddr(obj));
             return string(sb);
         };
         
