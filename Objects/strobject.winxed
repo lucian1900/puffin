@@ -1,0 +1,16 @@
+namespace Python [HLL] {
+
+class str : type {
+    function str(env) {
+        self.type('str', env.object);
+
+        self.__dict__['__init__'] = function(obj, val) {
+            obj.content = val;
+        };
+        self.__dict__['__repr__'] = function(obj) {
+            return obj.content;
+        };
+    }
+}
+
+}

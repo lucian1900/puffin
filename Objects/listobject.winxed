@@ -1,0 +1,20 @@
+namespace Python [HLL] {
+
+class tuple : type {
+    function tuple(env) {
+        self.type('tuple', env.object);
+
+        // "slots"
+        self.__dict__['__init__'] = function(obj, arr) {
+            obj.content = arr;
+        };
+        self.__dict__['__getitem__'] = function(obj, index) {
+            return obj.content[index]; 
+        };
+        self.__dict__['__len__'] = function(obj) {
+            return elements(obj.content);
+        };
+    }
+}
+
+}

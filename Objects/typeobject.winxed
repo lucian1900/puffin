@@ -1,0 +1,60 @@
+namespace Python [HLL] {
+
+class type {
+    var __dict__;
+    var __class__;
+
+    var __name__;
+    var __bases__;
+
+    function type(string name, var bases[slurpy]) {
+        self.__name__ = name;
+        self.__bases__ = bases;
+        self.__dict__ = {};
+
+
+        self.__dict__['__init__'] = function(obj) {};
+
+        self.__dict__['__hash__'] = function(obj) {
+            return getaddr(obj);
+        };
+
+        self.__dict__['__repr__'] = function(obj) {
+            var sb = new 'StringBuilder';
+            if(obj.__class__.__name__ == 'type')
+                sb.append_format("<class '%0'>", obj.__name__);
+            else
+                sb.append_format("<%0 object at %1>",
+                                 obj.__class__.__name__, getaddr(obj));
+            return string(sb);
+        };
+        
+        self.__dict__['__str__'] = self.__dict__['__repr__'];
+
+        self.__dict__['__getattribute__'] = function(obj, key) {                
+            var attr = obj.__dict__[key];
+
+            if(attr == null)
+                attr = obj.__class__.__dict__[key];
+
+            if(attr == null)
+                for(var i in obj.__class__.__bases__) {
+                    attr = i.__dict__[key];
+                    if(attr != null) break;
+                }
+
+            return attr;
+        };
+
+        self.__dict__['__setattr__'] = function(obj, key, val) {
+            obj.__dict__[key] = val;
+        };
+    }
+
+    function new() {
+        return new instance(self);
+    }
+}
+
+
+}
