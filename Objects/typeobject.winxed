@@ -83,7 +83,7 @@ class type : instance {
     }
 
     function set(key, val) {
-        self.__dict__[key, val];
+        self.__dict__[key] = val;
     }
 }
 
