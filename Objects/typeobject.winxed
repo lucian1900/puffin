@@ -1,22 +1,45 @@
 namespace Python [HLL] {
 
-class type {
+class instance {
+    var content;
+
     var __dict__;
     var __class__;
 
+    function instance(var tp) {
+        self.__dict__ = {};
+        self.__class__ = tp;
+    }
+
+    function get(key) {
+        return self.__class__.__dict__['__getattribute__'](self, key);
+    }
+
+    function set(key, val) {
+        self.__class__.__dict__['__setattr__'](self, key, val);
+    }
+}
+
+class type : instance {
     var __name__;
     var __bases__;
 
-    function type(string name, var bases[slurpy]) {
+    function type(string name, var cls, var bases[slurpy]) {
         self.__name__ = name;
         self.__bases__ = bases;
+        self.__class__ = cls;
+
+
         self.__dict__ = {};
 
+        self.__dict__['__dict__'] = self.__dict__;
 
         self.__dict__['__init__'] = function(obj) {};
 
         self.__dict__['__hash__'] = function(obj) {
-            return getaddr(obj);
+            int addr;
+            ${get_addr addr, obj};
+            return addr;
         };
 
         self.__dict__['__repr__'] = function(obj) {
@@ -54,7 +77,14 @@ class type {
     function new() {
         return new instance(self);
     }
-}
 
+    function get(key) {
+        return self.__dict__[key];
+    }
+
+    function set(key, val) {
+        self.__dict__[key, val];
+    }
+}
 
 }

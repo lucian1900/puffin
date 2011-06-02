@@ -2,7 +2,7 @@ namespace Python [HLL] {
 
 class dict : type {
     function dict(env) {
-        self.type('dict', env.object);
+        self.type('dict', env.type, env.object);
 
         self.__dict__['__init__'] = function(obj) {
             obj.content = new 'Hash';

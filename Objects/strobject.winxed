@@ -2,7 +2,7 @@ namespace Python [HLL] {
 
 class str : type {
     function str(env) {
-        self.type('str', env.object);
+        self.type('str', env.type, env.object);
 
         self.__dict__['__init__'] = function(obj, val) {
             obj.content = val;

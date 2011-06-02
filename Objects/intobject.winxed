@@ -2,7 +2,7 @@ namespace Python [HLL] {
 
 class int : type {
     function int(env) {
-        self.type('int', env.object);
+        self.type('int', env.type, env.object);
 
         self.__dict__['__init__'] = function(obj, val) {
             obj.content = val;
