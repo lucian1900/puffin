@@ -1,0 +1,19 @@
+namespace Python [HLL] {
+
+class bool : type {
+    function bool(env) {
+        self.type('int', env.type, env.object);
+
+        self.__dict__['__init__'] = function(obj, val) {
+            obj.content = val;
+        };
+        self.__dict__['__repr__'] = function(obj) {
+            if(obj.content)
+                return 'True';
+            else
+                return 'False';
+        };
+    }
+}
+
+}

@@ -4,7 +4,3 @@ This software is distributed under the terms of either of the following licenses
 - Artistic License 2.0
 
 The full text of each license is to be found in the files LICENSE.psfl2 and LICENSE.al2, respectively.
-
-
-Also, the Python Software Foundation and the Parrot Foundation are both granted a non-revocable, perpetual license to this software.
-TODO reword this last bit, make sure they can both relicense this under terms of their choosing.
