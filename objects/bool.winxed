@@ -7,7 +7,7 @@ class bool : int {
     function bool(env) {
         self.int(env);
         self.__name__ = 'bool';
-        self.__bases__ += 'int'; 
+        self.__bases__.push(env.int);
 
         self.__dict__['__init__'] = function(obj, val) {
             obj.content = val;

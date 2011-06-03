@@ -42,7 +42,7 @@ class core {
 }
 
 function main() {
-    var e = new Python.core();
+    var e = new python.core();
    
     //>>> object()
     //var i = e.object.new();
