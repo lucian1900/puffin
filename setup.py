@@ -2,6 +2,7 @@
 
 import os
 import subprocess
+from glob import glob
 
 from distutils.core import setup, Command
 
@@ -10,21 +11,19 @@ class build_winxed(Command):
     user_options = []
 
     def initialize_options(self):
-        self.cwd = None
         self.target_dir = 'objects'
 
-    def finalize_options(self):
-        self.cwd = os.getcwd()
+    def finalize_options(self): pass
 
     def find_files(self, ext):
-        files = os.listdir(os.path.join(self.cwd, self.target_dir))
+        files = os.listdir(self.target_dir)
 
         return [i for i in files if i.endswith(ext)]
 
     def compile_winxed(self, src):
         print('Building file {0}'.format(src))
         
-        src_path = os.path.join(self.cwd, self.target_dir, src)
+        src_path = os.path.join(self.target_dir, src)
         
         proc = subprocess.Popen(['winxed', '-c', src_path],
                                 stdout=subprocess.PIPE)
@@ -34,10 +33,8 @@ class build_winxed(Command):
     def compile_pir(self, src):
         print('Building file {0}'.format(src))
 
-        src_path = os.path.join(self.cwd, self.target_dir, src)
+        src_path = os.path.join(self.target_dir, src)
         pbc_path = src_path.replace('.pir', '.pbc')
-
-        print('src_path: {0}; pbc_path: {1}'.format(src_path, pbc_path))
 
         proc = subprocess.Popen(['parrot', '-o', pbc_path, src_path],
                                 stdout=subprocess.PIPE)
@@ -51,6 +48,22 @@ class build_winxed(Command):
         for i in self.find_files('.pir'):
             self.compile_pir(i)
 
+class clean_winxed(Command):
+    description = 'Remove all .pbc and .pir files from objects/'
+    user_options = []
+
+    def initialize_options(self):
+        self.target_dir = 'objects'
+
+    def finalize_options(self): pass
+
+    def run(self):
+        pir_paths = glob(os.path.join(self.target_dir, '*.pir'))
+        pbc_paths = glob(os.path.join(self.target_dir, '*.pbc'))
+
+        for i in pir_paths + pbc_paths:
+            os.remove(i)
+
 setup(
     name = 'puffin',
     packages = ['puffin'],
@@ -61,5 +74,6 @@ setup(
     url = 'http://bitbucket.org/lucian1900/puffin',
 
     cmdclass = {'build_winxed': build_winxed,
+                'clean_winxed': clean_winxed,
     },
 )
