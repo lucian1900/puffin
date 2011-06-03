@@ -94,7 +94,9 @@ class type : instance {
     }
 
     function new() {
-        return new instance(self);
+        var ins = new instance(self);
+        ins.get('__init__')(ins);
+        return ins;
     }
 
     function get(key) {
