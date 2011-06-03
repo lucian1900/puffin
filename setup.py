@@ -21,17 +21,17 @@ class build_winxed(Command):
         return [i for i in files if i.endswith(ext)]
 
     def compile_winxed(self, src):
-        print('Building file {0}'.format(src))
+        print('Building {0}'.format(src))
         
         src_path = os.path.join(self.target_dir, src)
         
-        proc = subprocess.Popen(['winxed', '-c', src_path],
+        proc = subprocess.Popen(['winxed', '--nowarn', '-c', src_path],
                                 stdout=subprocess.PIPE)
 
         output = proc.communicate()[0]
 
     def compile_pir(self, src):
-        print('Building file {0}'.format(src))
+        print('Building {0}'.format(src))
 
         src_path = os.path.join(self.target_dir, src)
         pbc_path = src_path.replace('.pir', '.pbc')

@@ -12,20 +12,32 @@ function boot() {
 }
 
 class Testtype {
-    function test_type_recur() {
+    
+
+    function type_class() {
         var o; var t; :(o, t) = boot();
-        self.assert.equal(t.__class__.__name__, t.__name__);
+        self.assert.same(t.__class__, t);
     }
 
-    function test_object_repr() {
+    function type_repr() {
+        var o; var t; :(o, t) = boot();
+        self.assert.equal(t.get('__repr__')(t), "<class 'type'>");
+    }
+
+    function object_class() {
+        var o; var t; :(o, t) = boot();
+        self.assert.same(o.__class__, t);
+    }
+
+    function object_repr() {
         var o; var t; :(o, t) = boot();
         self.assert.equal(o.get('__repr__')(o), "<class 'object'>");
     }
 }
 
+
 function main() {
     using Rosella.Test.test;
-
     test(class Testtype);
 }
 
