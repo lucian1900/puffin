@@ -14,6 +14,12 @@ function setattr(obj, key, val) {
         getattr(obj.__class__, '__setattr__')(obj, key, val);
 }
 
+function getaddr(obj) {
+    int addr;
+    ${get_addr addr, obj};
+    return addr;
+}
+
 class instance {
     var content;
 
@@ -53,9 +59,7 @@ class type : instance {
         self.__dict__['__init__'] = function(obj) {};
 
         self.__dict__['__hash__'] = function(obj) {
-            int addr;
-            ${get_addr addr, obj};
-            return addr;
+            return getaddr(obj);
         };
 
         self.__dict__['__repr__'] = function(obj) {
@@ -107,7 +111,5 @@ class type : instance {
         self.__dict__[key] = val;
     }
 }
-
-function main(){}
 
 }
