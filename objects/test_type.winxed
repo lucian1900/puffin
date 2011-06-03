@@ -13,10 +13,14 @@ function boot() {
 
 class Testtype {
     function boot() {
+        self.status.todo('investigate');
+
         self.assert.throws_nothing(boot());
     }
 
     function type_init() {
+        self.status.unimplemented('investigate');
+
         var t = new Python.type('type', null, null);
         self.assert.throws_nothing(t.get('__init__')(t));
     }
@@ -47,7 +51,7 @@ class Testtype {
     }
 
     function instance_init() {
-        self.status.todo('__init__ not yet a Python.function');
+        self.status.unimplemented('__init__ not yet a Python.function');
 
         var o; var t; :(o, t) = boot();
         var i = new Python.instance(o);
