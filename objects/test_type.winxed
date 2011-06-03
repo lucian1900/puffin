@@ -1,0 +1,29 @@
+$load 'rosella/test.pbc';
+$load 'type.pbc';
+
+function boot() {    
+    var o = new Python.type('object', null);
+    var t = new Python.type('type', null, o);
+
+    t.__class__ = t;
+    o.__class__ = t;
+
+    return o, t;
+}
+
+class Testtype {
+    function test_type_recur() {
+        self.assert.equal(self.t.__class__.__name__, self.t.__name__);
+    }
+
+    function test_object_repr() {
+        self.assert.equal(self.o.get('__repr__'), "<class 'object'>");
+    }
+}
+
+function main() {
+    using Rosella.Test.test;
+
+    test(class Testtype);
+}
+

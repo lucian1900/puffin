@@ -1,11 +1,11 @@
 $load 'rosella/test.pbc';
 $load 'core.pbc';
 
-class Testtype {
+class Testcore {
     function test_object() {
         var e = new Python.core();
-        var i = e.object.new();
-        self.assert.equal(i.get('__repr__'), "<class 'object'>");
+        //var i = e.object.new();
+        //self.assert.equal(i.get('__repr__'), "<class 'object'>");
     }
     //>>> object()
     //var i = e.object.new();
@@ -51,6 +51,6 @@ class Testtype {
 function main() {
     using Rosella.Test.test;
 
-    test(class Testtype);
+    test(class Testcore);
 }
 
