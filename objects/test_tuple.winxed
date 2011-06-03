@@ -1,5 +1,5 @@
 $load 'rosella/test.pbc';
-$load 'int.pbc';
+$load 'tuple.pbc';
 
 function intcls() {
     var o = new Python.type('object', null);
@@ -8,10 +8,10 @@ function intcls() {
     t.__class__ = t;
     o.__class__ = t;
 
-    return new Python.int(t, o);
+    return new Python.tuple(t, o);
 }
 
-class Testint {
+class Testtuple {
     function boot() {
         self.assert.throws_nothing(function(){
             intcls();
@@ -27,25 +27,24 @@ class Testint {
     function init() {
         var a = intcls().new();
         self.assert.throws_nothing(function(){
-            a.get('__init__')(a, 10);
+            a.get('__init__')(a, [1, 2, 3]);
         });
     }
 
-    function repr() {
-        var a = intcls().new();
-        a.content = 1;
-        self.assert.equal(a.get('__repr__')(a), '1');
+    function getitem() {
+        var a = intcls().new(); a.content = [1, 2, 3];
+
+        self.assert.equal(a.get('__getitem__')(a, 1), 2);
     }
 
-    function add() {
-        var a = intcls().new(); a.content = 20;
-        var b = intcls().new(); b.content = 22;
+    function len() {
+        var a = intcls().new(); a.content = [1, 2, 3];
 
-        self.assert.equal(a.get('__add__')(a, b).content, 42);
+        self.assert.equal(a.get('__len__')(a), 3);
     }
 }
 
 function main() {
     using Rosella.Test.test;
-    test(class Testint);
+    test(class Testtuple);
 }

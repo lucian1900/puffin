@@ -51,11 +51,13 @@ class Testtype {
     }
 
     function instance_init() {
-        self.status.unimplemented('__init__ not yet a Python.function');
+        self.status.todo('__init__ not yet a Python.function');
 
         var o; var t; :(o, t) = boot();
         var i = new Python.instance(o);
-        self.assert.throws_nothing(i.get('__init__').get('__call__')());
+        self.assert.throws_nothing(function(){
+            i.get('__init__').get('__call__')();
+        });
     }
         
     function instance_get() {

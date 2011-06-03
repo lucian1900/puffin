@@ -6,4 +6,5 @@ syntax: glob
 *.swo
 .DS_Store
 __pycache__
-
+*.pbc
+*.pir
