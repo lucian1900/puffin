@@ -1,0 +1,36 @@
+$load 'rosella/test.pbc';
+$load 'int.pbc';
+
+function intcls() {
+    var o = new Python.type('object', null);
+    var t = new Python.type('type', null, o);
+
+    t.__class__ = t;
+    o.__class__ = t;
+
+    var i = new Python.int(t, o);
+    return i;
+}
+
+class Testint {
+    function boot() {
+        self.assert.throws_nothing(intcls());
+    }
+
+    function create() {
+        self.assert.throws_nothing(intcls().new());
+    }
+
+    function repr() {
+        var a = intcls().new();
+        a.content = 1;
+        self.assert.equal(a.get('__repr__')(a), '1');
+    }
+}
+
+
+function main() {
+    using Rosella.Test.test;
+    test(class Testint);
+}
+
