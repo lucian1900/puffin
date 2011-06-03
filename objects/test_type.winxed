@@ -11,7 +11,7 @@ function boot() {
     return o, t;
 }
 
-class Testtype {
+class type {
     function boot() {
         self.assert.throws_nothing(function(){
             boot();
@@ -83,6 +83,6 @@ class Testtype {
 
 function main() {
     using Rosella.Test.test;
-    test(class Testtype);
+    test(class type);
 }
 

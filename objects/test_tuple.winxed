@@ -11,7 +11,7 @@ function intcls() {
     return new Python.tuple(t, o);
 }
 
-class Testtuple {
+class tuple {
     function boot() {
         self.assert.throws_nothing(function(){
             intcls();
@@ -46,5 +46,5 @@ class Testtuple {
 
 function main() {
     using Rosella.Test.test;
-    test(class Testtuple);
+    test(class tuple);
 }

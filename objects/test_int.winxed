@@ -11,7 +11,7 @@ function intcls() {
     return new Python.int(t, o);
 }
 
-class Testint {
+class int {
     function boot() {
         self.assert.throws_nothing(function(){
             intcls();
@@ -47,5 +47,5 @@ class Testint {
 
 function main() {
     using Rosella.Test.test;
-    test(class Testint);
+    test(class int);
 }
