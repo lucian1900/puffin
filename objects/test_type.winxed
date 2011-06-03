@@ -13,12 +13,16 @@ function boot() {
 
 class Testtype {
     function boot() {
-        self.assert.throws_nothing(function(){boot();});
+        self.assert.throws_nothing(function(){
+            boot();
+        });
     }
 
     function type_init() {
         var t = new Python.type('type', null, null);
-        self.assert.throws_nothing(function(){t.get('__init__')(t);});
+        self.assert.throws_nothing(function(){
+            t.get('__init__')(t);
+        });
     }
 
     function type_class() {

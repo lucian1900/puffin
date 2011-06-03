@@ -56,7 +56,7 @@ class type : instance {
 
         self.__dict__['__dict__'] = self.__dict__;
 
-        self.__dict__['__init__'] = function(obj) {};
+        self.__dict__['__init__'] = function(obj) {say('running __init__');};
 
         self.__dict__['__hash__'] = function(obj) {
             return getaddr(obj);
@@ -98,8 +98,13 @@ class type : instance {
     }
 
     function new() {
+        //say('creating new instance');
         var ins = new instance(self);
-        ins.get('__init__')(ins);
+        //say('created. getting __init__ ...');
+        //var init = ins.get('__init__');
+        //say('calling __init__ ...');
+        //init(ins);
+        //say('returning new instance');
         return ins;
     }
 
