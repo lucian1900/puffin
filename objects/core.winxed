@@ -1,3 +1,11 @@
+$load 'type.pbc';
+$load 'int.pbc';
+$load 'str.pbc';
+$load 'tuple.pbc';
+$load 'list.pbc';
+$load 'function.pbc';
+$load 'exception.pbc';
+
 namespace Python [HLL] {
 
 class core {

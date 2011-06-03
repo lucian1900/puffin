@@ -1,8 +1,10 @@
+$load 'type.pbc';
+
 namespace Python [HLL] {
 
-class tuple : type {
+class list : type {
     function tuple(env) {
-        self.type('tuple', env.type, env.object);
+        self.type('list', env.type, env.object);
 
         // "slots"
         self.__dict__['__init__'] = function(obj, arr) {
@@ -10,6 +12,9 @@ class tuple : type {
         };
         self.__dict__['__getitem__'] = function(obj, index) {
             return obj.content[index]; 
+        };
+        self.__dict__['__setitem__'] = function(obj, index, value) {
+            obj.content[index] = value;
         };
         self.__dict__['__len__'] = function(obj) {
             return elements(obj.content);

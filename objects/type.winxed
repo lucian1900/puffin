@@ -1,5 +1,19 @@
 namespace Python [HLL] {
 
+function getattr(obj, key) {
+    if(obj.__class__.__name__ == 'type')
+        return obj.__dict__[key];
+    else
+        return getattr(obj.__class__, '__getattribute__')(obj, key);
+}
+
+function setattr(obj, key, val) {
+    if(obj.__class__.__name__ == 'type')
+        obj.__dict__[key] = val;
+    else
+        getattr(obj.__class__, '__setattr__')(obj, key, val);
+}
+
 class instance {
     var content;
 
