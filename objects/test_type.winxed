@@ -13,11 +13,13 @@ function boot() {
 
 class Testtype {
     function test_type_recur() {
-        self.assert.equal(self.t.__class__.__name__, self.t.__name__);
+        var o; var t; :(o, t) = boot();
+        self.assert.equal(t.__class__.__name__, t.__name__);
     }
 
     function test_object_repr() {
-        self.assert.equal(self.o.get('__repr__'), "<class 'object'>");
+        var o; var t; :(o, t) = boot();
+        self.assert.equal(o.get('__repr__')(o), "<class 'object'>");
     }
 }
 
