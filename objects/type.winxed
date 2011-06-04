@@ -56,7 +56,7 @@ class type : instance {
 
         self.__dict__['__dict__'] = self.__dict__;
 
-        self.__dict__['__init__'] = function(obj) {say('running __init__');};
+        self.__dict__['__init__'] = function(obj) {};
 
         self.__dict__['__hash__'] = function(obj) {
             return getaddr(obj);

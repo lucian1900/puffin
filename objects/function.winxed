@@ -2,16 +2,41 @@ $load 'type.pbc';
 
 namespace Python [HLL] {
 
-class function : type {
-    function function(env) {
-        self.type('function', env.type, env.object);
+class funcontents {
+    var func;
+    var args;
+    var defargs;
 
-        self.__dict__['__call__'] = function(){};
+    function funcontents(func, args, defargs) {
+        self.func = func;
+        self.args = args;
+        self.defargs = args;
+    }
+}
+
+class function : Python.type {
+    function function(tp, ob) {
+        self.type('function', tp, ob);
+
+        self.__dict__['__init__'] = function(obj, func, args, defargs){
+            obj.content = new funcontents(func, args, defargs);
+        };
+
+        self.__dict__['__call__'] = function(obj, args){
+            var f = obj.content.func;
+            return f();
+        };
 
         // for turning functions into bound methods 
         self.__dict__['__get__'] = function(obj, cls) {
             
         };
+    }
+
+    function new(func, args[optional], defargs[optional]) {
+        var f = new Python.instance(self);
+        f.get('__init__')(f, func, args, defargs);
+        return f;
     }
 }
 

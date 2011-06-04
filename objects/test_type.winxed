@@ -26,34 +26,34 @@ class type {
     }
 
     function type_class() {
-        var o; var t; :(o, t) = boot();
+        :(var o, var t) = boot();
         self.assert.same(t.__class__, t);
     }
 
     function object_class() {
-        var o; var t; :(o, t) = boot();
+        :(var o, var t) = boot();
         self.assert.same(o.__class__, t);
     }
 
     function type_repr() {
-        var o; var t; :(o, t) = boot();
+        :(var o, var t) = boot();
         self.assert.equal(t.get('__repr__')(t), "<class 'type'>");
     }
 
     function object_repr() {
-        var o; var t; :(o, t) = boot();
+        :(var o, var t) = boot();
         self.assert.equal(o.get('__repr__')(o), "<class 'object'>");
     }
 
     function object_get() {
-        var o; var t; :(o, t) = boot();
+        :(var o, var t) = boot();
         self.assert.same(o.get('__repr__'), o.__dict__['__repr__']);
     }
 
     function instance_init() {
         self.status.todo('__init__ not yet a Python.function');
 
-        var o; var t; :(o, t) = boot();
+        :(var o, var t) = boot();
         var i = new Python.instance(o);
         self.assert.throws_nothing(function(){
             i.get('__init__').get('__call__')();
@@ -61,19 +61,19 @@ class type {
     }
         
     function instance_get() {
-        var o; var t; :(o, t) = boot();
+        :(var o, var t) = boot();
         var i = o.new();
         self.assert.same(i.get('__repr__'), i.__class__.__dict__['__repr__']);
     }
 
     function type_set_attr() {
-        var o; var t; :(o, t) = boot();
+        :(var o, var t) = boot();
         o.set('foo', 'bar');
         self.assert.equal(o.get('foo'), 'bar');
     }
 
     function instance_set_attr() {
-        var o; var t; :(o, t) = boot();
+        :(var o, var t) = boot();
         var i = o.new();
         i.set('foo', 'bar');
         self.assert.equal(i.get('foo'), 'bar');

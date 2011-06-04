@@ -18,10 +18,11 @@ class build_winxed(Command):
     def find_files(self, ext):
         files = os.listdir(self.target_dir)
 
-        return [i for i in files if i.endswith(ext)]
+        return [i for i in files 
+                if i.endswith(ext) and not i.startswith('test_')]
 
     def compile_winxed(self, src):
-        print('Building {0}'.format(src))
+        #print('Building {0}'.format(src))
         
         src_path = os.path.join(self.target_dir, src)
         
