@@ -1,0 +1,44 @@
+$load 'rosella/test.pbc';
+$load 'function.pbc';
+
+function funccls() {
+    var o = new Python.type('object', null);
+    var t = new Python.type('type', null, o);
+
+    t.__class__ = t;
+    o.__class__ = t;
+
+    return new Python.function(t, o);
+}
+
+class function {
+    function boot() {
+        self.assert.throws_nothing(function(){
+            funccls();
+        });
+    }
+
+    function create() {
+        self.assert.throws_nothing(function(){
+            funccls().new(function(){});
+        });
+    }
+
+    function call() {
+        var f = funccls().new(function(){});
+
+        self.assert.throws_nothing(function(){
+            f.get('__call__')(f, {});
+        });
+    }
+
+    function return() {
+        var f = funccls().new(function(){return 42;});
+        self.assert.equal(f.get('__call__')(f, {}), 42);
+    }
+}
+
+function main() {
+    using Rosella.Test.test;
+    test(class function);
+}
