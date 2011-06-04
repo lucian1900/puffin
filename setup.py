@@ -32,7 +32,7 @@ class build_winxed(Command):
         output = proc.communicate()[0]
 
     def compile_pir(self, src):
-        print('Building {0}'.format(src))
+        #print('Building {0}'.format(src))
 
         src_path = os.path.join(self.target_dir, src)
         pbc_path = src_path.replace('.pir', '.pbc')
