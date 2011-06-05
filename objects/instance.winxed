@@ -4,7 +4,9 @@ class instance {
     var __dict__;
 
     function init [vtable,nsentry]() {
-        ${ setattribute self, class instance, '__dict__', {} };
+        var dict = {};
+        dict['__dict__'] = dict;
+        ${ setattribute self, class instance, '__dict__', dict };
     }
 
     function init_pmc [vtable](var sub) {
