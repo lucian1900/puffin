@@ -20,8 +20,17 @@ function getaddr(obj) {
     return addr;
 }
 
+class scope {
+    function scope() {
+        
+    }
+}
+
 class instance {
+    // for objects with native contents (int, str, function, ...)
     var content;
+    // for objects that introduce their own scope (module, function, ...)
+    var scope;
 
     var __dict__;
     var __class__;
