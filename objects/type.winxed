@@ -21,15 +21,18 @@ function getaddr(obj) {
 }
 
 class scope {
-    function scope() {
-        
+    var parent;
+    var objects;
+
+    function scope(parent) {
+        self.parent = parent;
     }
 }
 
 class instance {
     // for objects with native contents (int, str, function, ...)
     var content;
-    // for objects that introduce their own scope (module, function, ...)
+    // for objects that modify scope (module, function, ...)
     var scope;
 
     var __dict__;

@@ -2,40 +2,33 @@ $load 'type.pbc';
 
 namespace Python [HLL] {
 
-class funcontents {
-    var func;
-    var args;
-    var defargs;
-
-    function funcontents(func, args, defargs) {
-        self.func = func;
-        self.args = args;
-        self.defargs = args;
-    }
-}
-
 class function : Python.type {
     function function(tp, ob) {
         self.type('function', tp, ob);
 
-        self.__dict__['__init__'] = function(obj, func, args, defargs){
-            obj.content = new funcontents(func, args, defargs);
+        self.__dict__['__init__'] = function(obj, func, args, scope){
+            obj.content = {'func':    func,
+                           'args':    args,
+                           'scope':   scope};
         };
 
         self.__dict__['__call__'] = function(obj, args){
-            var f = obj.content.func;
-            return f();
+            return obj.content['func'](null); //TODO pass scope
         };
 
         // for turning functions into bound methods 
         self.__dict__['__get__'] = function(obj, cls) {
+            obj.content['args'].unshift(cls);
             
+            return self.new(obj.content['func'],
+                            obj.content['args'],
+                            obj.content['scope']);
         };
     }
 
-    function new(func, args[optional], defargs[optional]) {
+    function new(func, args[optional], scope[optional]) {
         var f = new Python.instance(self);
-        f.get('__init__')(f, func, args, defargs);
+        f.get('__init__')(f, func, args || [], scope);
         return f;
     }
 }
