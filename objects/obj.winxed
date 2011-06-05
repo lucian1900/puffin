@@ -1,0 +1,80 @@
+namespace Python [HLL] {
+
+class instance {
+    var __dict__;
+
+    function init [vtable,nsentry]() {
+        var protoclass = class instance;
+        ${ setattribute self, protoclass, '__dict__', {} };
+    }
+
+    function init_pmc [vtable](var sub) {
+        using Python.instance.init;
+        self.*init();
+        ${ setprop self, "code", sub };
+    }
+
+    function invoke[vtable](var p [slurpy], var n [slurpy,named]) {
+        var sub = null;
+        ${ getprop sub, "code", self };
+        if (sub == null) say('object cannot be invoked');
+
+        return sub(p:[flat], n:[flat,named]);
+   }
+
+    function find_method[vtable](string name) {
+        var n = name;
+        return function(var obj, var p [slurpy], var n [slurpy,named]) {
+            var f = null;
+            if (exists obj.__dict__[n])
+                f = obj.__dict__[n];
+            //else search class & parent classes
+            if (f == null) say('method cannot be found');
+            
+            return obj.*f(p:[flat], n:[flat,named]);
+        };
+    }
+
+    function get_pmc_keyed_str[vtable,nsentry](string name) {
+        var dict;
+        var protoclass = class Python.instance;
+        ${ getattribute dict, self, protoclass, '__dict__' };
+        return dict[name];
+    }
+
+    function set_pmc_keyed_str[vtable,nsentry](string name, var value) {
+        var dict;
+        var protoclass = class Python.instance;
+        ${ getattribute dict, self, protoclass, '__dict__' };
+        //say(dict);
+        dict[name] = value;
+    }
+
+    function get_attr_str[vtable] (string name) {
+        using Python.instance.get_pmc_keyed_str;
+        return self.*get_pmc_keyed_str(name);
+    }
+
+    function set_attr_str[vtable] (string name, var value) {
+        using Python.instance.set_pmc_keyed_str;
+        return self.*set_pmc_keyed_str(name, value);
+    }
+
+    function get_pmc_keyed[vtable] (var name) {
+        using Python.instance.get_pmc_keyed_str;
+        return self.*get_pmc_keyed_str(name);
+    }
+
+    function set_pmc_keyed[vtable] (var name, var value) {
+        using Python.instance.set_pmc_keyed_str;
+        return self.*set_pmc_keyed_str(name, value);
+    }
+}
+
+}
+
+function main() {
+    var i = new ['Python','instance'];
+    i.a = 2;
+    say(i.a);
+}
