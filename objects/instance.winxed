@@ -4,8 +4,7 @@ class instance {
     var __dict__;
 
     function init [vtable,nsentry]() {
-        var protoclass = class instance;
-        ${ setattribute self, protoclass, '__dict__', {} };
+        ${ setattribute self, class instance, '__dict__', {} };
     }
 
     function init_pmc [vtable](var sub) {
@@ -23,11 +22,11 @@ class instance {
    }
 
     function find_method[vtable](string name) {
-        var n = name;
+        var fn = name;
         return function(var obj, var p [slurpy], var n [slurpy,named]) {
             var f = null;
-            if (exists obj.__dict__[n])
-                f = obj.__dict__[n];
+            if (exists obj.__dict__[fn])
+                f = obj.__dict__[fn];
             //else search class & parent classes
             if (f == null) say('method cannot be found');
             
@@ -46,7 +45,6 @@ class instance {
         var dict;
         var protoclass = class Python.instance;
         ${ getattribute dict, self, protoclass, '__dict__' };
-        //say(dict);
         dict[name] = value;
     }
 
@@ -74,7 +72,10 @@ class instance {
 }
 
 function main() {
-    var i = new ['Python','instance'];
+    var i = new Python.instance;
     i.a = 2;
     say(i.a);
+
+    i.b = function(){say('hello');};
+    i.b();
 }
