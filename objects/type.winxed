@@ -1,3 +1,5 @@
+$load 'instance.pbc';
+
 namespace Python [HLL] {
 
 function getattr(obj, key) {
@@ -20,13 +22,22 @@ function getaddr(obj) {
     return addr;
 }
 
-class scope {
-    var parent;
-    var objects;
+function get_type() {
+    var type = new Python.instance;
 
-    function scope(parent) {
-        self.parent = parent;
-    }
+    type.__class__ = type;
+    type.__name__ = 'type';
+    type.__bases__ = [];
+    type.__module__ = 'builtins';
+
+    type.__new__ = function(obj, name) {
+        var o = new Python.instance;
+
+        o.__class__ = obj;
+        o.__name__ = name;
+    };
+
+    return type;
 }
 
 class instance {

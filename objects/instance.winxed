@@ -9,19 +9,12 @@ class instance {
         ${ setattribute self, class instance, '__dict__', dict };
     }
 
-    function init_pmc [vtable](var sub) {
-        using Python.instance.init;
-        self.*init();
-        ${ setprop self, "code", sub };
-    }
-
     function invoke[vtable](var p [slurpy], var n [slurpy,named]) {
-        var sub = null;
-        ${ getprop sub, "code", self };
+        var sub = self.__call__;
         if (sub == null) say('object cannot be invoked');
 
         return sub(p:[flat], n:[flat,named]);
-   }
+    }
 
     function find_method[vtable](string name) {
         var fn = name;
@@ -75,9 +68,15 @@ class instance {
 
 function main() {
     var i = new Python.instance;
+    i.__call__ = function() {
+        say('calling');
+    };
+    i();
+
     i.a = 2;
     say(i.a);
 
     i.b = function(){say('hello');};
     i.b();
+
 }
