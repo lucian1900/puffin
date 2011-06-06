@@ -2,31 +2,30 @@ $load 'instance.pbc';
 
 namespace Python [HLL] {
 
-function get_type() {
-    var type = new Python.instance;
+function type() {
+    var t = new Python.instance;
 
-    type.__class__ = type;
-    type.__name__ = 'type';
-    type.__bases__ = [];
-    type.__module__ = 'builtins';
+    t.__class__ = t;
+    t.__name__ = 'type';
+    t.__bases__ = [];
 
-    type.__new__ = function(obj, name, bases[slurpy,optional]) {
+    t.__new__ = function(cls, name, bases[slurpy,optional]) {
         var o = new Python.instance;
 
-        o.__class__ = obj;
+        o.__class__ = cls;
         o.__name__ = name;
         o.__bases__ = bases;
     };
 
-    type.__init__ = function(obj) {};
+    t.__init__ = function(obj) {};
 
-    type.__hash__ = function(obj) {
+    t.__hash__ = function(obj) {
         int addr;
         ${get_addr addr, obj};
         return addr;
     };
 
-    type.__repr__ = function(obj) {
+    t.__repr__ = function(obj) {
         var sb = new 'StringBuilder';
         if(obj.__class__.__name__ == 'type')
             if(obj.__module__ == 'builtins')
@@ -39,9 +38,9 @@ function get_type() {
         return string(sb);
     };
         
-    type.__str__ = type.__repr__;
+    t.__str__ = t.__repr__;
 
-    type.__getattribute__ = function(obj, key) {                
+    t.__getattribute__ = function(obj, key) {                
         var attr = obj.__dict__[key];
 
         if(attr == null)
@@ -53,14 +52,15 @@ function get_type() {
                 if(attr != null) break;
             }
 
+        // descriptor
         return attr;
     };
 
-    type.__setattr__ = function(obj, key, val) {
+    t.__setattr__ = function(obj, key, val) {
         obj.__dict__[key] = val;
     };
 
-    return type;
+    return t;
 }
 
 }

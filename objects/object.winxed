@@ -2,16 +2,18 @@ $load 'type.pbc';
 
 namespace Python [HLL] {
 
-function get_object(type) {
-    var object = type.__new__(type, 'object');
-    type.__bases__.push(object);
+function object(type) {
+    var t = type.__new__(type, 'object');
+    type.__bases__.push(t);
 
-    object.__new__ = function(obj) {
+    t.__new__ = function(cls) {
         var o = new Python.instance;
-        o.__class__ = obj;
+        o.__class__ = cls;
 
         return o;
     };
+
+    return t;
 }
 
 }

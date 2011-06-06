@@ -3,11 +3,12 @@ $load 'type.pbc';
 $load 'object.pbc';
 
 function boot() {
-    using Python.get_type;
-    using Python.get_object;
+    using Python.type;
+    using Python.object;
+    using Python;
 
-    var t = get_type();
-    var o = get_object(t);
+    var t = Python.type();
+    var o = Python.object(t);
 
     return t, o;
 }
@@ -15,13 +16,12 @@ function boot() {
 class type {
     function boot() {
         self.assert.throws_nothing(function(){
-            boot();
+            :(var t, var o) = boot();
         });
     }
 
     function type_init() {
-        var t = get_type();
-        var o = get_object(t);
+        :(var t, var o) = boot();
 
         self.assert.throws_nothing(function(){
             t.__init__(t);
@@ -29,43 +29,37 @@ class type {
     }
 
     function type_class() {
-        var t = get_type();
-        var o = get_object(t);
+        :(var t, var o) = boot();
 
         self.assert.same(t.__class__, t);
     }
 
     function object_class() {
-        var t = get_type();
-        var o = get_object(t);
+        :(var t, var o) = boot();
 
         self.assert.same(o.__class__, t);
     }
 
     function type_repr() {
-        var t = get_type();
-        var o = get_object(t);
+        :(var t, var o) = boot();
 
         self.assert.equal(t.__repr__(t), "<class 'type'>");
     }
 
     function object_repr() {
-        var t = get_type();
-        var o = get_object(t);
+        :(var t, var o) = boot();
 
         self.assert.equal(o.__repr__(o), "<class 'object'>");
     }
 
     function object_get() {
-        var t = get_type();
-        var o = get_object(t);
+        :(var t, var o) = boot();
 
         self.assert.same(o.__repr__, o.__dict__['__repr__']);
     }
 
     function instance_init() {
-        var t = get_type();
-        var o = get_object(t);
+        :(var t, var o) = boot();
 
         self.status.todo('__init__ not yet a Python.function');
 
@@ -76,24 +70,21 @@ class type {
     }
         
     function instance_get() {
-        var t = get_type();
-        var o = get_object(t);
+        :(var t, var o) = boot();
 
         var i = o.__new__(o);
         self.assert.same(i.__repr__, i.__class__.__dict__['__repr__']);
     }
 
     function type_set_attr() {
-        var t = get_type();
-        var o = get_object(t);
+        :(var t, var o) = boot();
 
         o.foo = 'bar';
         self.assert.equal(o.foo, 'bar');
     }
 
     function instance_set_attr() {
-        var t = get_type();
-        var o = get_object(t);
+        :(var t, var o) = boot();
 
         var i = o.__new__(o);
         i.foo = 'bar';

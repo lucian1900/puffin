@@ -2,22 +2,33 @@ $load 'type.pbc';
 
 namespace Python [HLL] {
 
-class int : Python.type {
-    function int(tp, ob) {
-        self.type('int', tp, ob);
+class intinstance : Integer, Python.instance {
+    
+}
 
-        self.__dict__['__init__'] = function(obj, val) {
-            obj.content = val;
-        };
-        self.__dict__['__repr__'] = function(obj) {
-            return string(obj.content);
-        };
-        self.__dict__['__add__'] = function(obj, other) {
-            var result = self.new();
-            result.content = obj.content + other.content;
-            return result;
-        };
+function int(type, object) {
+    var i = type.__new__(type, 'int', object);
+
+    i.__new__ = function(cls, value[optional]) {
+        if(value == null) value = 0;
+
+        var n = new Python.intinstance;
+        n.__class__ = i;
+
+        ${ assign n, value };
+
+        return n;
     }
+
+    i.__repr__ = function(obj) {
+        return string(obj);
+    };
+
+    i.__add__ = function(obj, other) {
+        var result = 
+    };
+
+    return i;
 }
 
 }
