@@ -1,9 +1,15 @@
 $load 'type.pbc';
 
-namespace Python [HLL] {
+namespace Python {
 
 function object(type) {
-    var t = type.__new__(type, 'object');
+    var t = new Python.instance;
+
+    t.__class__ = type;
+    t.__name__ = 'object';
+    t.__bases__ = [];
+    t.__module__ = 'builtins';
+
     type.__bases__.push(t);
 
     t.__new__ = function(cls) {
@@ -11,6 +17,22 @@ function object(type) {
         o.__class__ = cls;
 
         return o;
+    };
+
+    t.__init__ = function(obj) {
+
+    };
+
+    t.__repr__ = function(obj) {
+        var sb = new 'StringBuilder';
+        
+        if(obj.__module__ == 'builtins')
+            sb.append_format("<%0 object at %1>",
+                             obj.__class__.__name__, obj.__hash__(obj)());
+        else
+            sb.append_format("<%0.%1 object at %2>",
+                             obj.__class__.__module__, obj.__class__.__name__, obj.__hash__(obj)());
+        return string(sb);
     };
 
     return t;

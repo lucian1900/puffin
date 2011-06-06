@@ -2,22 +2,17 @@ $load 'rosella/test.pbc';
 $load 'type.pbc';
 $load 'object.pbc';
 
-namespace Python [HLL] {
-
 function boot() {
-    using type;
-    using object;
-    say('   $$$ imported type and object');
-    
-    say(type == null);
+    using Python.type;
+    using Python.object;
+
     var t = type();
-    say('   $$$ called type()');
     var o = object(t);
 
     return t, o;
 }
 
-class test_type {
+class type {
     function boot() {
         self.assert.throws_nothing(function(){
             :(var t, var o) = boot();
@@ -27,8 +22,9 @@ class test_type {
     function type_init() {
         :(var t, var o) = boot();
 
+        var func = t.__init__;
         self.assert.throws_nothing(function(){
-            t.__init__(t);
+            func(t);
         });
     }
 
@@ -37,23 +33,38 @@ class test_type {
 
         self.assert.same(t.__class__, t);
     }
-
+    
+ 
     function object_class() {
         :(var t, var o) = boot();
 
         self.assert.same(o.__class__, t);
     }
 
+    function type_name() {
+        :(var t, var o) = boot();
+
+        self.assert.equal(t.__name__, 'type');
+    }
+
+    function object_name() {
+        :(var t, var o) = boot();
+        
+        self.assert.equal(o.__name__, 'object');
+    }
+
     function type_repr() {
         :(var t, var o) = boot();
 
-        self.assert.equal(t.__repr__(t), "<class 'type'>");
+        var func = t.__repr__;
+        self.assert.equal(func(t), "<class 'type'>");
     }
 
     function object_repr() {
         :(var t, var o) = boot();
-
-        self.assert.equal(o.__repr__(o), "<class 'object'>");
+        
+        var func = t.__repr__;
+        self.assert.equal(func(o), "<class 'object'>");
     }
 
     function object_get() {
@@ -65,19 +76,35 @@ class test_type {
     function instance_init() {
         :(var t, var o) = boot();
 
-        self.status.todo('__init__ not yet a Python.function');
-
-        var i = o.__new__(o);
+        var func = o.__new__;
+        var i = func(o);
         self.assert.throws_nothing(function(){
-            i.get('__init__').get('__call__')();
+            var a = i.__init__;
         });
     }
         
     function instance_get() {
         :(var t, var o) = boot();
 
-        var i = o.__new__(o);
-        self.assert.same(i.__repr__, i.__class__.__dict__['__repr__']);
+        var func = o.__new__;
+        var i = func(o);
+
+        o.bla = function(obj){return 42;};
+
+        func = i.bla;
+        say(func == null);
+        self.assert.same(i.bla, i.__class__.__dict__['bla']);
+    }
+
+    function instance_class_get() {
+        :(var t, var o) = boot();
+
+        var func = o.__new__;
+        var i = func(o);
+
+        t.bla = function(){};
+
+        self.assert.same(i.bla, i.__class__.__class__.__dict__['bla']);
     }
 
     function type_set_attr() {
@@ -90,16 +117,15 @@ class test_type {
     function instance_set_attr() {
         :(var t, var o) = boot();
 
-        var i = o.__new__(o);
+        var func = o.__new__;    
+        var i = func(o);
         i.foo = 'bar';
         self.assert.equal(i.foo, 'bar');
     }
 }
 
-}
-
 function main() {
     using Rosella.Test.test;
-    test(class Python.test_type);
+    test(class type);
 }
 

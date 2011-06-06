@@ -1,4 +1,10 @@
-namespace Python [HLL] {
+namespace Python {
+
+function id(obj) {
+    int addr;
+    ${get_addr addr, obj};
+    return addr;
+}
 
 class instance {
     var __dict__;
@@ -14,14 +20,6 @@ class instance {
         if (self.__call__ == null) say('object not callable');
 
         return sub(p:[flat], n:[flat,named]);
-    }
-
-    function find_method[vtable](string name) {
-        var fn = name;
-        return function(var obj, var p [slurpy], var n [slurpy,named]) {
-            var f = obj.__dict__[fn];
-            return obj.*f(p:[flat], n:[flat,named]);            
-        };
     }
 
     function get_pmc_keyed_str[vtable,nsentry](string name) {
@@ -52,7 +50,6 @@ class instance {
             dict['__setattr__'](self, name, value);
         else
             dict[name] = value;
-
     }
 
     function get_attr_str[vtable] (string name) {
@@ -76,9 +73,11 @@ class instance {
     }
 
     function get_string[vtable] () {
-        var cls = self.__dict__.__class__;
-        if(exists cls.__dict__['__repr__'])
+        var cls = self.__class__;
+        if(cls && exists cls.__dict__['__repr__'])
             return cls.__dict__['__repr__'](self);
+        else
+            return string(self.__dict__);
     }
 }
 
