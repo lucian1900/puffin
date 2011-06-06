@@ -1,0 +1,31 @@
+$load 'rosella/test.pbc';
+$load 'instance.pbc';
+
+class instance {
+    function set_get_attr() {
+        var i = new Python.instance;
+        i.a = 2;
+
+        self.assert.equal(i.a, 2);
+    }
+
+    function set_call_func() {
+        var i = new Python.instance;
+        i.b = function(){return 42;};
+
+        self.assert.equal(i.b(), 42);
+    }
+
+    function call_instance() {
+        var i = new Python.instance;
+        i.__call__ = function(){return 42;};
+
+        self.assert.equal(i(), 42);
+    }
+}
+
+function main() {
+    using Rosella.Test.test;
+    test(class instance);
+}
+

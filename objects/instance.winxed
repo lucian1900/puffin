@@ -11,7 +11,7 @@ class instance {
 
     function invoke[vtable](var p [slurpy], var n [slurpy,named]) {
         var sub = self.__call__;
-        if (sub == null) say('object cannot be invoked');
+        if (self.__call__ == null) say('object cannot be invoked');
 
         return sub(p:[flat], n:[flat,named]);
     }
@@ -66,17 +66,3 @@ class instance {
 
 }
 
-function main() {
-    var i = new Python.instance;
-    i.__call__ = function() {
-        say('calling');
-    };
-    i();
-
-    i.a = 2;
-    say(i.a);
-
-    i.b = function(){say('hello');};
-    i.b();
-
-}

@@ -1,14 +1,15 @@
 $load 'rosella/test.pbc';
 $load 'type.pbc';
+$load 'object.pbc';
 
-function boot() {    
-    var o = new Python.type('object', null);
-    var t = new Python.type('type', null, o);
+function boot() {
+    using Python.get_type;
+    using Python.get_object;
 
-    t.__class__ = t;
-    o.__class__ = t;
+    var t = get_type();
+    var o = get_object(t);
 
-    return o, t;
+    return t, o;
 }
 
 class type {
@@ -19,64 +20,84 @@ class type {
     }
 
     function type_init() {
-        var t = new Python.type('type', null, null);
+        var t = get_type();
+        var o = get_object(t);
+
         self.assert.throws_nothing(function(){
-            t.get('__init__')(t);
+            t.__init__(t);
         });
     }
 
     function type_class() {
-        :(var o, var t) = boot();
+        var t = get_type();
+        var o = get_object(t);
+
         self.assert.same(t.__class__, t);
     }
 
     function object_class() {
-        :(var o, var t) = boot();
+        var t = get_type();
+        var o = get_object(t);
+
         self.assert.same(o.__class__, t);
     }
 
     function type_repr() {
-        :(var o, var t) = boot();
-        self.assert.equal(t.get('__repr__')(t), "<class 'type'>");
+        var t = get_type();
+        var o = get_object(t);
+
+        self.assert.equal(t.__repr__(t), "<class 'type'>");
     }
 
     function object_repr() {
-        :(var o, var t) = boot();
-        self.assert.equal(o.get('__repr__')(o), "<class 'object'>");
+        var t = get_type();
+        var o = get_object(t);
+
+        self.assert.equal(o.__repr__(o), "<class 'object'>");
     }
 
     function object_get() {
-        :(var o, var t) = boot();
-        self.assert.same(o.get('__repr__'), o.__dict__['__repr__']);
+        var t = get_type();
+        var o = get_object(t);
+
+        self.assert.same(o.__repr__, o.__dict__['__repr__']);
     }
 
     function instance_init() {
+        var t = get_type();
+        var o = get_object(t);
+
         self.status.todo('__init__ not yet a Python.function');
 
-        :(var o, var t) = boot();
-        var i = new Python.instance(o);
+        var i = o.__new__(o);
         self.assert.throws_nothing(function(){
             i.get('__init__').get('__call__')();
         });
     }
         
     function instance_get() {
-        :(var o, var t) = boot();
-        var i = o.new();
-        self.assert.same(i.get('__repr__'), i.__class__.__dict__['__repr__']);
+        var t = get_type();
+        var o = get_object(t);
+
+        var i = o.__new__(o);
+        self.assert.same(i.__repr__, i.__class__.__dict__['__repr__']);
     }
 
     function type_set_attr() {
-        :(var o, var t) = boot();
-        o.set('foo', 'bar');
-        self.assert.equal(o.get('foo'), 'bar');
+        var t = get_type();
+        var o = get_object(t);
+
+        o.foo = 'bar';
+        self.assert.equal(o.foo, 'bar');
     }
 
     function instance_set_attr() {
-        :(var o, var t) = boot();
-        var i = o.new();
-        i.set('foo', 'bar');
-        self.assert.equal(i.get('foo'), 'bar');
+        var t = get_type();
+        var o = get_object(t);
+
+        var i = o.__new__(o);
+        i.foo = 'bar';
+        self.assert.equal(i.foo, 'bar');
     }
 }
 

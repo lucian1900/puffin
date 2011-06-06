@@ -2,26 +2,6 @@ $load 'instance.pbc';
 
 namespace Python [HLL] {
 
-function getattr(obj, key) {
-    if(obj.__class__.__name__ == 'type')
-        return obj.__dict__[key];
-    else
-        return getattr(obj.__class__, '__getattribute__')(obj, key);
-}
-
-function setattr(obj, key, val) {
-    if(obj.__class__.__name__ == 'type')
-        obj.__dict__[key] = val;
-    else
-        getattr(obj.__class__, '__setattr__')(obj, key, val);
-}
-
-function getaddr(obj) {
-    int addr;
-    ${get_addr addr, obj};
-    return addr;
-}
-
 function get_type() {
     var type = new Python.instance;
 
@@ -30,114 +10,57 @@ function get_type() {
     type.__bases__ = [];
     type.__module__ = 'builtins';
 
-    type.__new__ = function(obj, name) {
+    type.__new__ = function(obj, name, bases[slurpy,optional]) {
         var o = new Python.instance;
 
         o.__class__ = obj;
         o.__name__ = name;
+        o.__bases__ = bases;
+    };
+
+    type.__init__ = function(obj) {};
+
+    type.__hash__ = function(obj) {
+        int addr;
+        ${get_addr addr, obj};
+        return addr;
+    };
+
+    type.__repr__ = function(obj) {
+        var sb = new 'StringBuilder';
+        if(obj.__class__.__name__ == 'type')
+            if(obj.__module__ == 'builtins')
+                sb.append_format("<class '%0'>", obj.__name__);
+            else
+                sb.append_format("<class '%0.%1'>", obj.__module__, obj.__name__);
+        else
+            sb.append_format("<%0.%1 object at %2>",
+                             obj.__class__.__module__, obj.__class__.__name__, obj.__hash__(obj)());
+        return string(sb);
+    };
+        
+    type.__str__ = type.__repr__;
+
+    type.__getattribute__ = function(obj, key) {                
+        var attr = obj.__dict__[key];
+
+        if(attr == null)
+            attr = obj.__class__.__dict__[key];
+
+        if(attr == null)
+            for(var i in obj.__class__.__bases__) {
+                attr = i.__dict__[key];
+                if(attr != null) break;
+            }
+
+        return attr;
+    };
+
+    type.__setattr__ = function(obj, key, val) {
+        obj.__dict__[key] = val;
     };
 
     return type;
-}
-
-class instance {
-    // for objects with native contents (int, str, function, ...)
-    var content;
-    // for objects that modify scope (module, function, ...)
-    var scope;
-
-    var __dict__;
-    var __class__;
-
-    function instance(var tp) {
-        self.__dict__ = {};
-        self.__class__ = tp;
-    }
-
-    function get(key) {
-        return self.__class__.__dict__['__getattribute__'](self, key);
-    }
-
-    function set(key, val) {
-        self.__class__.__dict__['__setattr__'](self, key, val);
-    }
-}
-
-class type : instance {
-    var __name__;
-    var __bases__;
-    var __module__;
-
-    function type(string name, var cls, var bases[slurpy]) {
-        self.__name__ = name;
-        self.__bases__ = bases;
-        self.__class__ = cls;
-        self.__module__ = 'builtins';
-
-
-        self.__dict__ = {};
-
-        self.__dict__['__dict__'] = self.__dict__;
-
-        self.__dict__['__init__'] = function(obj) {};
-
-        self.__dict__['__hash__'] = function(obj) {
-            return getaddr(obj);
-        };
-
-        self.__dict__['__repr__'] = function(obj) {
-            var sb = new 'StringBuilder';
-            if(obj.__class__.__name__ == 'type')
-                if(obj.__module__ == 'builtins')
-                    sb.append_format("<class '%0'>", obj.__name__);
-                else
-                    sb.append_format("<class '%0.%1'>", obj.__module__, obj.__name__);
-            else
-                sb.append_format("<%0.%1 object at %2>",
-                                 obj.__class__.module, obj.__class__.__name__, getaddr(obj));
-            return string(sb);
-        };
-        
-        self.__dict__['__str__'] = self.__dict__['__repr__'];
-
-        self.__dict__['__getattribute__'] = function(obj, key) {                
-            var attr = obj.__dict__[key];
-
-            if(attr == null)
-                attr = obj.__class__.__dict__[key];
-
-            if(attr == null)
-                for(var i in obj.__class__.__bases__) {
-                    attr = i.__dict__[key];
-                    if(attr != null) break;
-                }
-
-            return attr;
-        };
-
-        self.__dict__['__setattr__'] = function(obj, key, val) {
-            obj.__dict__[key] = val;
-        };
-    }
-
-    function new() {
-        //say('creating new instance');
-        var ins = new instance(self);
-        //say('created. getting __init__ ...');
-        //var init = ins.get('__init__');
-        //say('calling __init__ ...');
-        //init(ins);
-        //say('returning new instance');
-        return ins;
-    }
-
-    function get(key) {
-        return self.__dict__[key];
-    }
-
-    function set(key, val) {
-        self.__dict__[key] = val;
-    }
 }
 
 }
