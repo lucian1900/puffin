@@ -11,7 +11,7 @@ class instance {
 
     function invoke[vtable](var p [slurpy], var n [slurpy,named]) {
         var sub = self.__call__;
-        if (self.__call__ == null) say('object cannot be invoked');
+        if (self.__call__ == null) say('object not callable');
 
         return sub(p:[flat], n:[flat,named]);
     }
@@ -19,13 +19,8 @@ class instance {
     function find_method[vtable](string name) {
         var fn = name;
         return function(var obj, var p [slurpy], var n [slurpy,named]) {
-            var f = null;
-            if (exists obj.__dict__[fn])
-                f = obj.__dict__[fn];
-            //else search class & parent classes
-            if (f == null) say('method cannot be found');
-            
-            return obj.*f(p:[flat], n:[flat,named]);
+            var f = obj.__dict__[fn];
+            return obj.*f(p:[flat], n:[flat,named]);            
         };
     }
 
@@ -33,14 +28,31 @@ class instance {
         var dict;
         var protoclass = class Python.instance;
         ${ getattribute dict, self, protoclass, '__dict__' };
-        return dict[name];
+    
+        // __dict__ short-circuit
+        if(name == '__dict__')
+            return dict;
+        // let objects override it
+        else if(exists dict['__getattribute__'])
+            return dict['__getattribute__'](self, name);
+        else //todo check for missing
+            return dict[name];
     }
 
     function set_pmc_keyed_str[vtable,nsentry](string name, var value) {
         var dict;
         var protoclass = class Python.instance;
         ${ getattribute dict, self, protoclass, '__dict__' };
-        dict[name] = value;
+       
+        // __dict__ short-circuit
+        if(name == '__dict__')
+            dict = value; //TODO use setattribute to swap dict
+        // let objects override it
+        else if(exists dict['__setattr__'])
+            dict['__setattr__'](self, name, value);
+        else
+            dict[name] = value;
+
     }
 
     function get_attr_str[vtable] (string name) {
