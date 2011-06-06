@@ -5,10 +5,12 @@ $load 'object.pbc';
 function boot() {
     using Python.type;
     using Python.object;
-    using Python;
+    say('   $$$ imported type and object');
 
-    var t = Python.type();
-    var o = Python.object(t);
+    say(type);
+    var t = type();
+    say('   $$$ called type()');
+    var o = object(t);
 
     return t, o;
 }

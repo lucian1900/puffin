@@ -9,8 +9,8 @@ class intinstance : Integer, Python.instance {
 function int(type, object) {
     var i = type.__new__(type, 'int', object);
 
-    i.__new__ = function(cls, value[optional]) {
-        if(value == null) value = 0;
+    i.__new__ = function(cls, value[optional], int has_value[opt_flag]) {
+        if(!has_value) value = 0;
 
         var n = new Python.intinstance;
         n.__class__ = i;
@@ -18,14 +18,16 @@ function int(type, object) {
         ${ assign n, value };
 
         return n;
-    }
+    };
 
     i.__repr__ = function(obj) {
         return string(obj);
     };
 
     i.__add__ = function(obj, other) {
-        var result = 
+        var result;
+        ${ add result, obj, other };
+        return obj.__new__(obj.__class__, result);
     };
 
     return i;
