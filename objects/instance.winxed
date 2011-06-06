@@ -74,6 +74,12 @@ class instance {
         using Python.instance.set_pmc_keyed_str;
         return self.*set_pmc_keyed_str(name, value);
     }
+
+    function get_string[vtable] () {
+        var cls = self.__dict__.__class__;
+        if(exists cls.__dict__['__repr__'])
+            return cls.__dict__['__repr__'](self);
+    }
 }
 
 }

@@ -1,7 +1,9 @@
 $load 'rosella/test.pbc';
 $load 'instance.pbc';
 
-class instance {
+namespace Python [HLL] {
+
+class test_instance {
     function set_get_attr() {
         var i = new Python.instance;
         i.a = 2;
@@ -28,8 +30,10 @@ class instance {
     }
 }
 
+}
+
 function main() {
     using Rosella.Test.test;
-    test(class instance);
+    test(class Python.test_instance);
 }
 

@@ -2,12 +2,14 @@ $load 'rosella/test.pbc';
 $load 'type.pbc';
 $load 'object.pbc';
 
-function boot() {
-    using Python.type;
-    using Python.object;
-    say('   $$$ imported type and object');
+namespace Python [HLL] {
 
-    say(type);
+function boot() {
+    using type;
+    using object;
+    say('   $$$ imported type and object');
+    
+    say(type == null);
     var t = type();
     say('   $$$ called type()');
     var o = object(t);
@@ -15,7 +17,7 @@ function boot() {
     return t, o;
 }
 
-class type {
+class test_type {
     function boot() {
         self.assert.throws_nothing(function(){
             :(var t, var o) = boot();
@@ -94,9 +96,10 @@ class type {
     }
 }
 
+}
 
 function main() {
     using Rosella.Test.test;
-    test(class type);
+    test(class Python.test_type);
 }
 
