@@ -46,7 +46,19 @@ function type() {
     t.__str__ = t.__repr__;
 
     t.__getattribute__ = function(obj, key) {
-        //TODO first try descriptor
+        var cls = obj.__dict__['__class__'];
+        
+        //first try descriptor
+        if(exists cls.__dict__[key]) {
+            var attr = cls.__dict__[key];
+
+            if(typeof(attr) == 'Python;instance' &&
+                exists attr.__dict__['__get__']) {
+
+                var descriptor = attr.__dict__['__get__'];
+                return descriptor(attr, obj);
+            }
+        }
         //TODO then descriptors of parents
 
         // then try instance
@@ -54,10 +66,10 @@ function type() {
             return obj.__dict__[key];
 
         // then class
-        if(exists obj.__class__.__dict__[key])
-            return obj.__class__.__dict__[key];
+        if(exists cls.__dict__[key])
+            return cls.__dict__[key];
 
-        // then parent classes
+        //TODO then parent classes
         for(var i in obj.__class__.__bases__) {
             if(exists i.__dict__[key])
                 return i.__dict__[key];

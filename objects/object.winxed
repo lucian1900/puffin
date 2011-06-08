@@ -1,10 +1,15 @@
+$load 'instance.pbc';
 $load 'type.pbc';
 
 namespace Python {
 
 function object(type) {
-    var f = type.__new__;
-    var t = f(type, 'object', []);
+    var t = new Python.instance;
+
+    t.__class__ = type;
+    t.__name__ = 'object';
+    t.__bases__ = [];
+    t.__module__ = 'builtins';
 
     type.__bases__.push(t);
 
@@ -21,13 +26,14 @@ function object(type) {
 
     t.__repr__ = function(obj) {
         var sb = new 'StringBuilder';
-        
+        var hash = obj.__hash__; 
+
         if(obj.__module__ == 'builtins')
             sb.append_format("<%0 object at %1>",
-                             obj.__class__.__name__, obj.__hash__(obj)());
+                             obj.__class__.__name__, hash(obj));
         else
             sb.append_format("<%0.%1 object at %2>",
-                             obj.__class__.__module__, obj.__class__.__name__, obj.__hash__(obj)());
+                             obj.__class__.__module__, obj.__class__.__name__, hash(obj));
         return string(sb);
     };
 

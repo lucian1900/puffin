@@ -125,6 +125,17 @@ class type {
         i.foo = 'bar';
         self.assert.equal(i.foo, 'bar');
     }
+
+    function non_data_descriptor() {
+        :(var t, var o) = boot();
+        var f = o.__new__;
+        var i = f(o);
+    
+        i.__get__ = function(attr, obj) {return 42;};
+
+        t.i = i;
+        self.assert.equal(t.i, 42);
+    }
 }
 
 function main() {
