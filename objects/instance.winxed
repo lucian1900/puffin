@@ -19,6 +19,9 @@ class instance {
         var sub = self.__call__;
         if (self.__call__ == null) say('object not callable');
 
+        // if sub is a parrot sub, it'll get executed
+        // if sub is an instance with __call__, this invoke will get called
+        //   all the way down to a sub
         return sub(p:[flat], n:[flat,named]);
     }
 

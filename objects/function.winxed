@@ -1,36 +1,31 @@
 $load 'type.pbc';
 
-namespace Python [HLL] {
+namespace Python {
 
-class function : Python.type {
-    function function(tp, ob) {
-        self.type('function', tp, ob);
+function func(type, object) {
+    var f = type.__new__;
+    var fn = f(type, 'function', [object]);
 
-        self.__dict__['__init__'] = function(obj, func, args, scope){
-            obj.content = {'func':    func,
-                           'args':    args,
-                           'scope':   scope};
-        };
+    fn.__new__ = function(cls, code) {
+        var n = new Python.instance;
+        n.__class__ = cls;
+        n.__call__ = code; //TODO check code is Sub
 
-        self.__dict__['__call__'] = function(obj, args){
-            return obj.content['func'](null); //TODO pass scope
-        };
+        return n;
+    };
 
-        // for turning functions into bound methods 
-        self.__dict__['__get__'] = function(obj, cls) {
-            obj.content['args'].unshift(cls);
-            
-            return self.new(obj.content['func'],
-                            obj.content['args'],
-                            obj.content['scope']);
-        };
-    }
+    fn.__get__ = function(fn, obj, cls[optional], int has_cls[opt_flag]) {
+        if(!has_cls) cls = obj.__class__;
 
-    function new(func, args[optional], scope[optional]) {
-        var f = new Python.instance(self);
-        f.get('__init__')(f, func, args || [], scope);
-        return f;
-    }
+        // close over obj
+        return function(var p [slurpy], var n [slurpy,named]) {
+            return fn(obj, p:[flat], n:[flat,named]);
+        }; 
+    };
+
+    //TODO figure out python calling on parrot
+
+    return fn;
 }
 
 }

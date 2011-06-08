@@ -1,57 +1,69 @@
 $load 'rosella/test.pbc';
+$load 'instance.pbc';
+$load 'type.pbc';
+$load 'object.pbc';
 $load 'function.pbc';
 
 function funccls() {
-    var o = new Python.type('object', null);
-    var t = new Python.type('type', null, o);
+    using Python.type;
+    using Python.object;
+    using Python.func;
 
-    t.__class__ = t;
-    o.__class__ = t;
+    var t = type();
+    var o = object(t);
 
-    return new Python.function(t, o);
+    return func(t, o);
 }
 
-class function {
+class func {
     function boot() {
         self.assert.throws_nothing(function(){
-            //>>> function
             funccls(); 
         });
     }
 
     function create() {
-        self.assert.throws_nothing(function(){
-            //>>> def f(): pass
-            funccls().new(function(s){});
-        });
+        var fn = funccls();
+        var f = fn.__new__;
+
+        var code = function() {};
+        var i = f(fn, code);
+
+        using Python.id;
+        self.assert.equal(id(i.__call__), id(code));
     }
 
     function call() {
-        var f = funccls().new(function(s){});
+        var fn = funccls();
+        var f = fn.__new__;
 
-        self.assert.throws_nothing(function(){
-            //>>> f()
-            f.get('__call__')(f, {});
-        });
+        var i = f(fn, function(){return 42;});
+
+        self.assert.equal(i(), 42);
     }
 
-    function return() {
-        var f = funccls().new(function(s){return 42;});
+    function call_args() {
+        var fn = funccls();
+        var f = fn.__new__;
 
-        //>>> def f(): return 42; f() == 42
-        self.assert.equal(f.get('__call__')(f, {}), 42);
+        var i = f(fn, function(a){return a+1;});
+
+        self.assert.equal(i(41), 42);
     }
 
     function method_get() {
-        self.status.unimplemented('not yet decided on syntax');
+        var fn = funccls();
+        var f = fn.__new__;
+        var i = f(fn, function(a){return a+1;});
+    
+        f = fn.__get__;
+        var b = f(i, 41, null);
 
-        var f = funccls().new(function(s){return 42;});
-
-        self.assert.equal();
+        self.assert.equal(b(), 42); 
     }
 }
 
 function main() {
     using Rosella.Test.test;
-    test(class function);
+    test(class func);
 }
