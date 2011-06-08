@@ -54,6 +54,11 @@ class instance {
 
         self.assert.equal(i(), 42);
     }
+
+    function get_mro() {
+        self.status.unimplemented('writeme');
+        using Python.get_mro;
+    }
 }
 
 function main() {

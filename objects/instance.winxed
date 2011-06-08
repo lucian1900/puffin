@@ -9,9 +9,13 @@ function id(obj) {
 function get_mro(cls) {
     var list = [cls];
    
-    // for now, only search the first level 
+    // add the classes in the first level
     for(var i in cls.__bases__)
         list.push(i);
+
+    // recurse down
+    for(var i in cls.__bases__)
+        list.append(get_mro(i));
         
     return list;
 }
@@ -40,7 +44,7 @@ class instance {
         var protoclass = class Python.instance;
         ${ getattribute dict, self, protoclass, '__dict__' };
     
-        for(var i in ['__dict__', '__bases__', '__new__'])
+        for(var i in ['__dict__', '__bases__', '__class__', '__new__'])
             if(i == name && exists dict[i])
                 return dict[i];
 
