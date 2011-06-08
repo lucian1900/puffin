@@ -74,7 +74,7 @@ class instance {
 
     function get_string[vtable] () {
         var cls = self.__class__;
-        if(cls && exists cls.__dict__['__repr__'])
+        if(cls != null && exists cls.__dict__['__repr__'])
             return cls.__dict__['__repr__'](self);
         else
             return string(self.__dict__);
