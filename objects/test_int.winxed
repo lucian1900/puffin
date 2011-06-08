@@ -1,4 +1,6 @@
 $load 'rosella/test.pbc';
+$load 'type.pbc';
+$load 'object.pbc';
 $load 'int.pbc';
 
 function intcls() {
@@ -20,28 +22,36 @@ class int {
     }
 
     function create() {
-        self.status.unimplemented('intcls() broken');
         var i = intcls();
-        self.assert.throws_nothing(function(){
-            i.__new__(i, 2);
-        });
+        var f = i.__new__;
+    
+        self.assert.equal(f(i, 2).__value__, 2);
+    }
+
+    function create_zero() {
+        var i = intcls();
+        var f = i.__new__;
+
+        self.assert.equal(f(i).__value__, 0);
     }
 
     function repr() {
-        self.status.unimplemented('intcls() broken');
         var i = intcls();
-        var a = i.__new__(i, 1);
+        var f = i.__new__;
+        var a = f(i, 1);
 
-        self.assert.equal(a.__repr__(a), '1');
+        var repr = i.__repr__;
+        self.assert.equal(repr(a), '1');
     }
 
     function add() {
-        self.status.unimplemented('intcls() broken');
         var i = intcls();
-        var a = i.__new__(i, 20); 
-        var b = i.__new__(i, 22); 
+        var f = i.__new__;
+        var a = f(i, 20); 
+        var b = f(i, 22);
 
-        self.assert.equal(a.__add__(a, b), 42);
+        var add = i.__add__;
+        self.assert.equal(add(a, b).__value__, 42);
     }
 }
 

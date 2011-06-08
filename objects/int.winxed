@@ -2,35 +2,26 @@ $load 'type.pbc';
 
 namespace Python {
 
-class intinstance : Integer, Python.instance {
-    
-}
-
 function int(type, object) {
-    say('calling __new__');
     var f = type.__new__;
     var i = f(type, 'int', [object]);
-    say('called __new__');
 
-    i.__new__ = function(cls, value[optional], int has_value[opt_flag]) {
-        if(!has_value) value = 0;
-
-        var n = new Python.intinstance;
-        n.__class__ = i;
-
-        ${ assign n, value };
+    i.__new__ = function(cls, int value[optional]) {
+        var n = new Python.instance;
+        n.__class__ = cls;
+        n.__value__ = value;
 
         return n;
     };
 
     i.__repr__ = function(obj) {
-        return string(obj);
+        return string(obj.__value__);
     };
 
     i.__add__ = function(obj, other) {
-        var result;
-        ${ add result, obj, other };
-        return obj.__new__(obj.__class__, result);
+        var result = obj.__value__ + other.__value__;
+        var f = obj.__new__;
+        return f(obj.__class__, result);
     };
 
     return i;
