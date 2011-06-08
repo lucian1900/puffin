@@ -16,6 +16,12 @@ function type() {
         o.__class__ = cls;
         o.__name__ = name;
         o.__bases__ = bases;
+
+        return o;
+    };
+
+    t.__call__ = function(obj) {
+        return obj.__class__;
     };
 
     t.__init__ = function(obj) {};
@@ -36,14 +42,17 @@ function type() {
         
         return string(sb);
     };
-        
+ 
     t.__str__ = t.__repr__;
 
     t.__getattribute__ = function(obj, key) {
-        // first try instance
+        //TODO first try descriptor
+        //TODO then descriptors of parents
+
+        // then try instance
         if(exists obj.__dict__[key])
             return obj.__dict__[key];
-        
+
         // then class
         if(exists obj.__class__.__dict__[key])
             return obj.__class__.__dict__[key];
@@ -54,7 +63,7 @@ function type() {
                 return i.__dict__[key];
         }
 
-        // throw exception
+        // throw AttributeError
     };
 
     t.__setattr__ = function(obj, key, val) {

@@ -1,4 +1,5 @@
 $load 'type.pbc';
+$load 'object.pbc';
 
 namespace Python [HLL] {
 

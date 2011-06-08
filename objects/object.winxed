@@ -3,12 +3,8 @@ $load 'type.pbc';
 namespace Python {
 
 function object(type) {
-    var t = new Python.instance;
-
-    t.__class__ = type;
-    t.__name__ = 'object';
-    t.__bases__ = [];
-    t.__module__ = 'builtins';
+    var f = type.__new__;
+    var t = f(type, 'object');
 
     type.__bases__.push(t);
 
