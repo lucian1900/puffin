@@ -56,16 +56,13 @@ class type {
     function type_repr() {
         :(var t, var o) = boot();
 
-        var func = t.__repr__;
-        self.assert.equal(func(t), "<class 'type'>");
+        self.assert.equal(string(t), "<class 'type'>");
     }
 
     function object_repr() {
         :(var t, var o) = boot();
         
-        var func = t.__repr__;
-        say(func(o));
-        self.assert.equal(func(o), "<class 'object'>");
+        self.assert.equal(string(o), "<class 'object'>");
     }
 
     function object_get() {

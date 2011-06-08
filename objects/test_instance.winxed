@@ -35,10 +35,8 @@ class instance {
     }
 
     function get_string() {
-        self.status.todo('for now');
         var i = new Python.instance;
-        i.__class__ = new Python.instance;
-        i.__class__.__repr__ = function(obj) {return '42';};
+        i.__repr__ = function(obj) {return '42';};
 
         self.assert.equal(string(i), '42');
     }
