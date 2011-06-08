@@ -6,8 +6,10 @@ function type() {
     var t = new Python.instance;
 
     t.__class__ = t;
-    t.__name__ = 'type';
     t.__bases__ = [];
+    t.__mro__ = [t];
+
+    t.__name__ = 'type';
     t.__module__ = 'builtins';
 
     t.__new__ = function(cls, name, bases) {

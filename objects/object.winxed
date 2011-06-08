@@ -7,11 +7,14 @@ function object(type) {
     var t = new Python.instance;
 
     t.__class__ = type;
-    t.__name__ = 'object';
     t.__bases__ = [];
+    t.__mro__ = [t];
+
+    t.__name__ = 'object';
     t.__module__ = 'builtins';
 
     type.__bases__.push(t);
+    type.__mro__.push(t);
 
     t.__new__ = function(cls) {
         var o = new Python.instance;
