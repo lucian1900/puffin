@@ -9,6 +9,13 @@ class instance {
         self.assert.equal(i.a, 2);
     }
 
+    function get_bases() {
+        var i = new Python.instance;
+        i.__bases__ = [1, 2];
+
+        self.assert.equal(i.__bases__, [1, 2]);
+    }
+
     function getattribute() {
         var i = new Python.instance;
         i.__getattribute__ = function(obj, name) {

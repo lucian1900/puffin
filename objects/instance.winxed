@@ -6,6 +6,16 @@ function id(obj) {
     return addr;
 }
 
+function get_mro(cls) {
+    var list = [cls];
+   
+    // for now, only search the first level 
+    for(var i in cls.__bases__)
+        list.push(i);
+        
+    return list;
+}
+
 class instance {
     var __dict__;
 
@@ -30,14 +40,21 @@ class instance {
         var protoclass = class Python.instance;
         ${ getattribute dict, self, protoclass, '__dict__' };
     
-        // __dict__ short-circuit
-        if(name == '__dict__')
-            return dict;
+        for(var i in ['__dict__', '__bases__', '__new__'])
+            if(i == name && exists dict[i])
+                return dict[i];
+
         // let objects override it
-        else if(exists dict['__getattribute__'])
-            return dict['__getattribute__'](self, name);
-        else //todo check for missing
-            return dict[name];
+        if(exists dict['__class__']) {
+            var mro = get_mro(dict['__class__']);
+
+            for(var i in mro)
+                if(exists i.__dict__['__getattribute__'])
+                    return i.__dict__['__getattribute__'](self, name);
+
+        }
+        //TODO check for missing
+        return dict[name];
     }
 
     function set_pmc_keyed_str[vtable,nsentry](string name, var value) {
