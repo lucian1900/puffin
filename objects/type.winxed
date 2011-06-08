@@ -70,7 +70,7 @@ function type() {
             return cls.__dict__[key];
 
         //TODO then parent classes
-        for(var i in obj.__class__.__bases__) {
+        for(var i in cls.__dict__['__bases__']) {
             if(exists i.__dict__[key])
                 return i.__dict__[key];
         }

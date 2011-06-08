@@ -62,7 +62,7 @@ class type {
     function object_repr() {
         self.status.todo('__getattribute__ is broken');
         :(var t, var o) = boot();
-
+        
         self.assert.equal(string(o), "<class 'object'>");
     }
 
@@ -70,6 +70,12 @@ class type {
         :(var t, var o) = boot();
 
         self.assert.same(o.__repr__, o.__dict__['__repr__']);
+    }
+
+    function object_get_class() {
+        :(var t, var o) = boot();
+
+        self.assert.same(o.__hash__, t.__dict__['__hash__']);
     }
 
     function instance_init() {

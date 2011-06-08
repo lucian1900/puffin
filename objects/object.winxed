@@ -20,8 +20,14 @@ function object(type) {
         return o;
     };
 
-    t.__init__ = function(obj) {
+    t.__init__ = function(obj) {};
 
+    t.__call__ = function(cls) {
+        var f = cls.__new__;
+        var n = f(cls);
+        f = n.__init__;
+        f(n);
+        return n;
     };
 
     t.__repr__ = function(obj) {
