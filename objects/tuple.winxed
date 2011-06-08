@@ -1,21 +1,30 @@
 $load 'type.pbc';
 
-namespace Python [HLL] {
+namespace Python {
 
-class tuple : Python.type {
-    function tuple(tp, ob) {
-        self.type('tuple', tp, ob);
+function tuple(type, object) {
+    var f = type.__new__;
+    var t = f(type, 'tuple', [object]);
 
-        self.__dict__['__init__'] = function(obj, arr) {
-            obj.content = arr;
-        };
-        self.__dict__['__getitem__'] = function(obj, index) {
-            return obj.content[index]; 
-        };
-        self.__dict__['__len__'] = function(obj) {
-            return elements(obj.content);
-        };
-    }
+    t.__new__ = function(cls, arr[optional], int has_arr[opt_flag]) {
+        if(!has_arr) arr = [];
+
+        var n = new Python.instance;
+        n.__class__ = cls;
+        n.__value__ = arr;
+
+        return n;
+    };
+
+    t.__getitem__ = function(obj, index) {
+        return obj.__value__[index];
+    };
+
+    t.__len__ = function(obj) {
+        return elements(obj.__value__);
+    };
+
+    return t;
 }
 
 }

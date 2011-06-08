@@ -1,46 +1,59 @@
 $load 'rosella/test.pbc';
+$load 'type.pbc';
+$load 'object.pbc';
 $load 'tuple.pbc';
 
-function intcls() {
-    var o = new Python.type('object', null);
-    var t = new Python.type('type', null, o);
+function tupcls() {
+    using Python.type;
+    using Python.object;
+    using Python.tuple;
 
-    t.__class__ = t;
-    o.__class__ = t;
+    var t = type();
+    var o = object(t);
 
-    return new Python.tuple(t, o);
+    return tuple(t, o);
 }
+
 
 class tuple {
     function boot() {
         self.assert.throws_nothing(function(){
-            intcls();
+            tupcls();
         });
     }
 
     function create() {
-        self.assert.throws_nothing(function(){
-            intcls().new();
-        });
+        var t = tupcls();
+        var f = t.__new__;
+
+        self.assert.equal(f(t).__value__, []);
     }
 
-    function init() {
-        var a = intcls().new();
-        self.assert.throws_nothing(function(){
-            a.get('__init__')(a, [1, 2, 3]);
-        });
+    function create_arr() {
+        var t = tupcls();
+        var f = t.__new__;
+
+        self.assert.equal(f(t, [1, 2, 3]).__value__, [1, 2, 3]);
     }
 
     function getitem() {
-        var a = intcls().new(); a.content = [1, 2, 3];
+        var t = tupcls();
 
-        self.assert.equal(a.get('__getitem__')(a, 1), 2);
+        var f = t.__new__;
+        var i = f(t, [1, 2, 3]);
+
+        var get = t.__getitem__; 
+        self.assert.equal(get(i, 1), 2);
     }
 
     function len() {
-        var a = intcls().new(); a.content = [1, 2, 3];
+        var t = tupcls();
 
-        self.assert.equal(a.get('__len__')(a), 3);
+        var f = t.__new__;
+        var i = f(t, [1, 2, 3]);
+
+        var len = t.__len__; 
+        self.assert.equal(len(i), 3);
     }
 }
 
