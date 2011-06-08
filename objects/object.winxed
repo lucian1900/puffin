@@ -4,7 +4,7 @@ namespace Python {
 
 function object(type) {
     var f = type.__new__;
-    var t = f(type, 'object');
+    var t = f(type, 'object', []);
 
     type.__bases__.push(t);
 

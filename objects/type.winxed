@@ -10,7 +10,7 @@ function type() {
     t.__bases__ = [];
     t.__module__ = 'builtins';
 
-    t.__new__ = function(cls, name, bases[slurpy,optional]) {
+    t.__new__ = function(cls, name, bases) {
         var o = new Python.instance;
 
         o.__class__ = cls;

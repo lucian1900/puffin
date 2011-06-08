@@ -1,14 +1,16 @@
 $load 'type.pbc';
-$load 'object.pbc';
 
-namespace Python [HLL] {
+namespace Python {
 
 class intinstance : Integer, Python.instance {
     
 }
 
 function int(type, object) {
-    var i = type.__new__(type, 'int', object);
+    say('calling __new__');
+    var f = type.__new__;
+    var i = f(type, 'int', [object]);
+    say('called __new__');
 
     i.__new__ = function(cls, value[optional], int has_value[opt_flag]) {
         if(!has_value) value = 0;

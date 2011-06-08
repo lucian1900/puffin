@@ -60,8 +60,9 @@ class type {
     }
 
     function object_repr() {
+        self.status.todo('__getattribute__ is broken');
         :(var t, var o) = boot();
-        
+
         self.assert.equal(string(o), "<class 'object'>");
     }
 
@@ -82,7 +83,7 @@ class type {
     }
         
     function instance_get() {
-        self.status.unimplemented('__getattribute__ broken for now.');
+        self.status.todo('__getattribute__ broken for now.');
 
         :(var t, var o) = boot();
 
@@ -97,7 +98,7 @@ class type {
     }
 
     function instance_class_get() {
-        self.status.unimplemented('__getattribute__ broken for now.');
+        self.status.todo('__getattribute__ broken for now.');
 
         :(var t, var o) = boot();
 
