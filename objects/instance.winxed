@@ -36,11 +36,6 @@ class instance {
         // let objects override it
         else if(exists dict['__getattribute__'])
             return dict['__getattribute__'](self, name);
-        // and their class and bases
-        else if(exists dict['__mro__'])
-            for(var i in dict['__mro__'])
-                if(exists i.__dict__['__getattribute__'])
-                    return i.__dict__['__getattribute__'](self, name);
         else //todo check for missing
             return dict[name];
     }

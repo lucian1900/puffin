@@ -7,7 +7,6 @@ function type() {
 
     t.__class__ = t;
     t.__bases__ = [];
-    t.__mro__ = [t];
 
     t.__name__ = 'type';
     t.__module__ = 'builtins';
