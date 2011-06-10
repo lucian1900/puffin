@@ -19,15 +19,17 @@ class Codegen(ast.NodeVisitor):
         super().generic_visit(node)
 
     def visit_Module(self, node):
-        self.pir += '''
-        load_bytecode 'boot.pbc'
-        .sub '__main__' :main
-            'boot'()
-        '''
+        self.pir += ".sub '' :anon :load :init\n"
+        self.pir += "    load_bytecode 'boot.pbc'\n"
+        self.pir += "    'boot'()\n"
+        self.pir += ".end\n\n"
+
+        self.pir += ".sub '__main__' :main\n"
+        self.pir += "    say object\n"
  
         super().generic_visit(node)
 
-        self.pir += '.end'
+        self.pir += ".end"
 
     def visit_BinOp(self, node):
         #nothing to do for now
@@ -88,6 +90,6 @@ if __name__ == '__main__':
         pir = compile(code)
         
         name = os.path.basename(sys.argv[1])
-        name.replace('.py', '.pir')
+        name = name.replace('.py', '.pir')
         with open(name, 'w') as f:
             f.write(pir)

@@ -2,6 +2,9 @@ from compiler import compile
 from util import parrot
 
 class TestOutput():
+    def test_null(self):
+        assert parrot(compile('')) == b'';
+
     def test_print(self):
         assert parrot(compile('print(2)')) == b'2\n'
 

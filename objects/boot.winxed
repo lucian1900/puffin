@@ -24,9 +24,11 @@ function boot() {
     env['int'] = int(t, o);
     env['tuple'] = tuple(t, o);
 
+    say('injecting globals');
     for(string key in env) {
         ${set_global key, env[key]};
     }
+    say('globals injected');
 }
 
 }
