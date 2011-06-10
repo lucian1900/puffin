@@ -38,7 +38,15 @@ class instance {
         //   all the way down to a sub
         return sub(p:[flat], n:[flat,named]);
     }
-
+/*
+    function find_method[vtable](string name) {
+        var fn = name;
+        
+        return function(obj, p[slurpy], n[slurpy,named]) {
+            
+        }
+    }
+*/
     function get_pmc_keyed_str[vtable,nsentry](string name) {
         var dict;
         var protoclass = class Python.instance;

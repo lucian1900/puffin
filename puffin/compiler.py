@@ -7,7 +7,7 @@ class Codegen(ast.NodeVisitor):
     def __init__(self):
         super().__init__()
 
-        self.pir = list()
+        self.pir = []
     
     @property
     def code(self):
@@ -19,11 +19,15 @@ class Codegen(ast.NodeVisitor):
         super().generic_visit(node)
 
     def visit_Module(self, node):
-        self.pir += ".sub 'main' :main\n"
-        
+        self.pir += '''
+        load_bytecode 'boot.pbc'
+        .sub '__main__' :main
+            'boot'()
+        '''
+ 
         super().generic_visit(node)
 
-        self.pir += ".end"
+        self.pir += '.end'
 
     def visit_BinOp(self, node):
         #nothing to do for now
@@ -52,7 +56,7 @@ class Codegen(ast.NodeVisitor):
             self.pir += '\n'
 
     def visit_Assign(self, node):
-        self.pir += '.local int {0}\n'.format(node.targets[0].id)
+        self.pir += '.local pmc {0}\n'.format(node.targets[0].id)
         
         super().generic_visit(node)
 
@@ -66,7 +70,7 @@ class Codegen(ast.NodeVisitor):
     def visit_Store(self, node):
         self.pir += ' = '
 
-def pcompile(code):
+def compile(code):
     t = ast.parse(code)
     c = Codegen()
     c.visit(t)
@@ -81,7 +85,7 @@ if __name__ == '__main__':
         with open(sys.argv[1], 'r') as f:
             code = f.read()
         
-        pir = pcompile(code)
+        pir = compile(code)
         
         name = os.path.basename(sys.argv[1])
         name.replace('.py', '.pir')
