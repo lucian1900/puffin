@@ -1,0 +1,32 @@
+$load 'type.pbc';
+$load 'object.pbc';
+$load 'function.pbc';
+$load 'int.pbc';
+$load 'tuple.pbc';
+
+namespace Python {
+
+function boot() {
+    using Python.type;
+    using Python.object;
+    using Python.func;
+    using Python.int;
+    using Python.tuple;
+
+    var env = {};
+
+    var t = type();
+    var o = object(t);
+
+    env['type'] = t;
+    env['object'] = o;
+    env['function'] = func(t, o);
+    env['int'] = int(t, o);
+    env['tuple'] = tuple(t, o);
+
+    for(string key in env) {
+        ${set_global key, env[key]};
+    }
+}
+
+}
