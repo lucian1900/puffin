@@ -1,0 +1,26 @@
+$load 'rosella/test.pbc';
+$load 'boot.pbc';
+
+class boot {
+    function call() {
+        using Python.boot;
+        self.assert.throws_nothing(function(){
+            boot();
+        });
+    }
+
+    function check_global() {
+        using Python.boot;
+        boot();
+
+        self.assert.throws_nothing(function(){
+            //var object;
+            //${ get_global object, 'object'};
+        });
+    }
+}
+
+function main() {
+    using Rosella.Test.test;
+    test(class boot);
+}
