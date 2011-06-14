@@ -3,10 +3,12 @@
 .end
 
 .sub '__main__' :main
-    .local pmc env
     .local pmc builtins
-    get_hll_global boot, ['Python'], 'builtins'
+    get_global builtins, ['Python'], 'builtins'
+
+    .local pmc env
     env = builtins()
+
     .local pmc obj
     obj = env['object']
 .end
