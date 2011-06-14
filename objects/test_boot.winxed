@@ -2,21 +2,35 @@ $load 'rosella/test.pbc';
 $load 'boot.pbc';
 
 class boot {
-    function call() {
-        using Python.boot;
+    function builtins_call() {
+        using Python.builtins;
+
         self.assert.throws_nothing(function(){
-            boot();
+            builtins();
         });
     }
 
-    function check_global() {
-        using Python.boot;
-        boot();
+    function check_object() {
+        using Python.builtins;
 
-        self.assert.throws_nothing(function(){
-            //var object;
-            //${ get_global object, 'object'};
-        });
+        var env = builtins();
+        var object = env['object'];
+
+        self.assert.equal(object.__name__, 'object');
+    }
+
+    function globalize() {
+        using Python.builtins;
+        using Python.globalize;
+        using Python.id;
+
+        var env = builtins();
+        globalize(env);
+
+        var object;
+        ${ get_global object, 'object' };
+
+        self.assert.equal(id(env['object']), id(object));
     }
 }
 

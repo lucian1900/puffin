@@ -6,7 +6,7 @@ $load 'tuple.pbc';
 
 namespace Python {
 
-function boot() {
+function builtins() {
     using Python.type;
     using Python.object;
     using Python.func;
@@ -24,11 +24,12 @@ function boot() {
     env['int'] = int(t, o);
     env['tuple'] = tuple(t, o);
 
-    say('injecting globals');
-    for(string key in env) {
-        ${set_global key, env[key]};
-    }
-    say('globals injected');
+    return env;
+}
+
+function globalize(var env) {
+    for(string key in env)
+        ${ set_global key, env[key] };
 }
 
 }
