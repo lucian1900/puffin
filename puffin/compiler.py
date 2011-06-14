@@ -2,6 +2,17 @@
 
 import ast
 
+head = '''
+.sub initial_load_bytecode :anon :load :init
+    load_bytecode 'boot.pbc'
+.end
+
+.sub 'main' :main
+    get_hll_global $P3, [ 'Python' ] , 'builtins'
+    $P1 = $P3()
+'''
+tail = '.end'
+
 class Codegen(ast.NodeVisitor):
 
     def __init__(self):
@@ -14,41 +25,33 @@ class Codegen(ast.NodeVisitor):
         return ''.join(self.pir)
 
     def generic_visit(self, node):
+        # this helps show unimplemented nodes
         print(type(node).__name__)
 
         super().generic_visit(node)
 
     def visit_Module(self, node):
-        self.pir += ".sub '__main__' :main\n"
-        self.pir += "    load_bytecode 'boot.pbc'\n"
-        self.pir += "    .local pmc env\n"
-        self.pir += "    'env = boot'()\n"
-        self.pir += "    say env{object}\n"
- 
+        self.pir += head
+
         super().generic_visit(node)
 
-        self.pir += ".end"
-
-    def visit_BinOp(self, node):
-        #nothing to do for now
-        super().generic_visit(node)
-
-    def visit_Load(self, node):
-        #nothing to do for now
-        super().generic_visit(node)
+        self.pir += tail
 
     def visit_Add(self, node):
-        self.pir += ' + '
+        self.pir += '+'
 
     def visit_Num(self, node):
         self.pir += str(node.n)
+
+    def visit_Str(self, node):
+        self.pir += "{0}".format(node.s)
 
     def visit_Expr(self, node):
         super().generic_visit(node)
 
     def visit_Call(self, node):
         if node.func.id == 'print':
-            self.pir += 'say '
+            self.pir += '\nsay '
  
             for i in node.args:
                 super().visit(i)
@@ -62,13 +65,21 @@ class Codegen(ast.NodeVisitor):
 
         self.pir += '\n'
 
+    def visit_AugAssign(self, node):
+        super().generic_visit(node.target)
+        super().generic_visit(node.op)
+
+        super().generic_visit(node)
+
+        super().generic_visit(node.value)
+
     def visit_Name(self, node): 
         self.pir += node.id
 
         super().generic_visit(node)
 
     def visit_Store(self, node):
-        self.pir += ' = '
+        self.pir += '='
 
 def compile(code):
     t = ast.parse(code)
