@@ -19,13 +19,11 @@ class Codegen(ast.NodeVisitor):
         super().generic_visit(node)
 
     def visit_Module(self, node):
-        self.pir += ".sub '' :anon :load :init\n"
-        self.pir += "    load_bytecode 'boot.pbc'\n"
-        self.pir += "    'boot'()\n"
-        self.pir += ".end\n\n"
-
         self.pir += ".sub '__main__' :main\n"
-        self.pir += "    say object\n"
+        self.pir += "    load_bytecode 'boot.pbc'\n"
+        self.pir += "    .local pmc env\n"
+        self.pir += "    'env = boot'()\n"
+        self.pir += "    say env{object}\n"
  
         super().generic_visit(node)
 
