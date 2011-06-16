@@ -14,16 +14,23 @@ head = '''
 '''
 tail = '.end'
 
+get_attr = '''$P1 = builtins["{0}"]
+$P2 = getattribute $P1, "{1}"\n'''
+
 class Codegen(ast.NodeVisitor):
 
     def __init__(self):
         super().__init__()
 
+        self.decls = []
         self.pir = []
     
     @property
     def code(self):
-        return ''.join(self.pir)
+        pir = head
+        pir += ''.join(self.decls + self.pir)
+        pir += tail
+        return pir
 
     def generic_visit(self, node):
         # this helps show unimplemented nodes
@@ -32,17 +39,16 @@ class Codegen(ast.NodeVisitor):
         super().generic_visit(node)
 
     def visit_Module(self, node):
-        self.pir += head
-
         super().generic_visit(node)
-
-        self.pir += tail
 
     def visit_Add(self, node):
         self.pir += '+'
 
     def visit_Num(self, node):
-        self.pir += str(node.n)
+        self.decls += get_attr.format('int', '__new__')
+        self.decls += "$P3 = $P2({0})\n".format(node.n)
+
+        self.pir += "$P3"
 
     def visit_Str(self, node):
         self.pir += "'{0}'".format(node.s)
@@ -70,7 +76,7 @@ class Codegen(ast.NodeVisitor):
         super().generic_visit(node.target)
         super().generic_visit(node.op)
 
-        super().generic_visit(node)
+        #super().generic_visit(node)
 
         super().generic_visit(node.value)
 
