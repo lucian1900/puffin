@@ -8,8 +8,9 @@ head = '''
 .end
 
 .sub 'main' :main
-    get_hll_global $P3, [ 'Python' ] , 'builtins'
-    $P1 = $P3()
+    get_hll_global $P2, [ 'Python' ] , 'builtins'
+    .local pmc builtins
+    builtins = $P2()
 '''
 tail = '.end'
 
@@ -44,7 +45,7 @@ class Codegen(ast.NodeVisitor):
         self.pir += str(node.n)
 
     def visit_Str(self, node):
-        self.pir += "{0}".format(node.s)
+        self.pir += "'{0}'".format(node.s)
 
     def visit_Expr(self, node):
         super().generic_visit(node)
