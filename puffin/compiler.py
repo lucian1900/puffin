@@ -11,11 +11,18 @@ head = '''
     get_hll_global $P2, [ 'Python' ] , 'builtins'
     .local pmc builtins
     builtins = $P2()
+
+    .local pmc globals
+    globals = new "Hash"
 '''
 tail = '.end'
 
 get_attr = '''$P1 = builtins["{0}"]
 $P2 = getattribute $P1, "{1}"\n'''
+
+class Block:
+    def __init__(self):
+        pass
 
 class Codegen(ast.NodeVisitor):
 
@@ -42,7 +49,7 @@ class Codegen(ast.NodeVisitor):
         super().generic_visit(node)
 
     def visit_Add(self, node):
-        self.pir += '+'
+        self.pir += ' + '
 
     def visit_Num(self, node):
         self.decls += get_attr.format('int', '__new__')
@@ -53,24 +60,23 @@ class Codegen(ast.NodeVisitor):
     def visit_Str(self, node):
         self.pir += "'{0}'".format(node.s)
 
-    def visit_Expr(self, node):
-        super().generic_visit(node)
-
     def visit_Call(self, node):
+        # special-case for print. for now
         if node.func.id == 'print':
-            self.pir += '\nsay '
- 
-            for i in node.args:
-                super().visit(i)
-
             self.pir += '\n'
 
-    def visit_Assign(self, node):
-        self.pir += '.local pmc {0}\n'.format(node.targets[0].id)
-        
-        super().generic_visit(node)
+            regs = []
+            for i, e in enumerate(node.args):
+                regs += '$P{0}'.format(i)
+                self.pir += '$P{0} = '.format(i)
 
-        self.pir += '\n'
+                super().visit(e)
+                self.pir += '\n'
+
+            self.pir += 'say '
+            for i in regs:
+                self.pir += i
+            self.pir += '\n'
 
     def visit_AugAssign(self, node):
         super().generic_visit(node.target)
@@ -81,12 +87,12 @@ class Codegen(ast.NodeVisitor):
         super().generic_visit(node.value)
 
     def visit_Name(self, node): 
-        self.pir += node.id
+        self.pir += "globals['{0}']".format(node.id)
 
         super().generic_visit(node)
 
     def visit_Store(self, node):
-        self.pir += '='
+        self.pir += ' = '
 
 def compile(code):
     t = ast.parse(code)

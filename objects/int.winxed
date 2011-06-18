@@ -18,6 +18,8 @@ function int(type, object) {
         return string(obj.__value__);
     };
 
+    i.__str__ = i.__repr__;
+
     i.__add__ = function(obj, other) {
         var result = obj.__value__ + other.__value__;
         var f = obj.__new__;

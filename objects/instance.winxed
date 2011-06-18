@@ -105,10 +105,10 @@ class instance {
     }
 
     function get_string[vtable] () {
-        var str = self.get_pmc_keyed_str('__str__');
+        var str = self.__str__;
         if(str != null) return str(self);
 
-        var repr = self.get_pmc_keyed_str('__repr__');
+        var repr = self.__repr__;
         if(repr != null) return repr(self); 
         
         return string(id(self));
