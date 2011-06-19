@@ -11,9 +11,6 @@ head = '''
     get_hll_global $P2, [ 'Python' ] , 'builtins'
     .local pmc builtins
     builtins = $P2()
-
-    .local pmc globals
-    globals = new "Hash"
 '''
 tail = '.end'
 
@@ -46,6 +43,10 @@ class Codegen(ast.NodeVisitor):
         super().generic_visit(node)
 
     def visit_Module(self, node):
+        self.pir += '''
+        .local pmc globals
+        globals = new "Hash"\n'''
+
         super().generic_visit(node)
 
     def visit_Add(self, node):
