@@ -17,7 +17,7 @@ tail = '.end'
 get_attr = '''$P1 = builtins["{0}"]
 $P2 = getattribute $P1, "{1}"\n'''
 
-class Block:
+class Frame:
     def __init__(self):
         pass
 
@@ -59,7 +59,10 @@ class Codegen(ast.NodeVisitor):
         self.pir += "$P3"
 
     def visit_Str(self, node):
-        self.pir += "'{0}'".format(node.s)
+        self.decls += get_attr.format('str', '__new__')
+        self.decls += "$P3 = $P2('{0}')\n".format(node.n)
+
+        self.pir += "$P3"
 
     def visit_Call(self, node):
         # special-case for print. for now

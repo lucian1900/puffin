@@ -8,3 +8,4 @@ syntax: glob
 __pycache__
 *.pbc
 *.pir
+*.sublime-project

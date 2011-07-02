@@ -1,0 +1,232 @@
+function main[main](argv)
+{
+    setup_distutils();
+    var puffin = {
+        "name"              : 'Puffin',
+        "abstract"          : 'Python3 object system for Parrot',
+        "authority"         : 'http://bitbucket.org/lucian1900',
+        "copyright_holder"  : 'Lucian Branescu Mihaila',
+        "keywords"          : ["python", "hll", "object", "python3"],
+        "license_type"      : 'Artistic License 2.0 / Python Software Foundation License 2.0',
+        "license_uri"       : 'http://www.perlfoundation.org/artistic_license_2_0',
+        "checkout_uri"      : 'http://bitbucket.org/lucian1900/puffin',
+        "browser_uri"       : 'http://bitbucket.org/lucian1900/puffin',
+        "project_uri"       : 'http://bitbucket.org/lucian1900/puffin',
+        "pir_nqp-rx"        : {},
+        "pir_winxed"        : {},
+        "pbc_pbc"           : {},
+        "pbc_pir"           : {},
+        "pir_pir"           : {},
+        "winxed_winxed"     : {},
+        "inst_lib"          : [],
+        "installable_pbc"   : {},
+        "include_winxed"    : {},
+        "manifest_includes" : ["setup.winxed"]
+    };
+
+    if (argv[1] == "test")
+        do_test();
+
+    setup_release(puffin);
+    setup_stable_libraries(puffin);
+
+    get_all_tests(puffin, "t");
+    argv.shift();
+    setup(argv, puffin);
+}
+
+function setup_release(var puffin)
+{
+    puffin["pir_winxed"]["setup.pir"] = "setup.winxed";
+    puffin["manifest_includes"].push("setup.pir");
+}
+
+function setup_stable_libraries(var puffin)
+{
+    setup_winxed_lib(puffin, "core", [],
+        "object",
+        "type",
+    );
+}
+
+function setup_winxed_lib(var puffin, string name, var includes, var files [slurpy],
+        var named [slurpy,named])
+{
+    setup_lib_internal(puffin, name, "src/", includes, files, named);
+}
+
+
+function setup_lib_internal(var puffin, string name, string prefix,
+        var includes, var files_raw, var named)
+{
+    var pir_files = [];
+    setup_lib_constants(puffin, name, prefix, named);
+
+    // Get a list of all files
+    var files = [];
+    for (string include in includes)
+        push(files, "src/include/" + include + ".winxed");
+    for (string file in files_raw)
+        push(files, prefix + file + ".winxed");
+
+    string winxed_master = "puffin/" + name + ".winxed";
+    string pbc_lib_name = "puffin/" + name + ".pbc";
+    string pir_lib_name = "puffin/" + name + ".pir";
+    puffin["winxed_winxed"][winxed_master] = files;
+    puffin["pir_winxed"][pir_lib_name] = winxed_master;
+    puffin["pbc_pir"][pbc_lib_name] = pir_lib_name;
+    puffin["inst_lib"].push(pbc_lib_name);
+    puffin["manifest_includes"].push(pir_lib_name);
+}
+
+
+function setup_lib_constants(var puffin, string name, string prefix, var args)
+{
+    var constants_files = args["constants"];
+    if (constants_files == null || elements(constants_files) == 0)
+        return;
+    for (string constant_file in constants_files) {
+        string pasm_file = sprintf("%s%s.pasm", [prefix, constant_file]);
+        string winxed_file = sprintf("%s%s.winxed", [prefix, constant_file]);
+        puffin["include_winxed"][pasm_file] = winxed_file;
+    }
+}
+
+
+// Load in the distutils library, which we are also responsible for
+// building. If we don't have a version handy, load in the bootstrapping
+// version. If we do have one built, use that instead
+function setup_distutils()
+{
+    int e = 0;
+    string distutils = "puffin/winxed.pbc";
+    ${ stat e, distutils, 0 };
+    if (e)
+        load_bytecode(distutils);
+    else {
+        say("Bootstrapping build with existing distutils library");
+        load_bytecode("src/winxed/Distutils.bootstrap.pir");
+    }
+
+    using Rosella.Winxed.Distutils.winxed_setup;
+    winxed_setup();
+    using register_step_before;
+    using build_version_file;
+    using clean_version_file;
+    register_step_before("build", build_version_file);
+    register_step_before("clean", clean_version_file);
+}
+
+// TODO: "build" first, before we test.
+function do_test()
+{
+    using get_nqp;
+    string nqp = "parrot-nqp"; //get_nqp();
+    string cmd = nqp + " t/harness";
+    int result;
+    ${ spawnw result, cmd };
+    ${ exit result };
+}
+
+function get_all_tests(var puffin, string path)
+{
+    loadlib("os");
+    var os = new 'OS';
+    int STAT_ISREG = 0x8000;
+    int STAT_ISDIR = 0x4000;
+    var contents_raw = os.readdir(path);
+
+    for (string file in contents_raw) {
+        string entry = path + "/" + file;
+        var stat = os.stat(entry);
+        int mode = stat[2];
+        int isdir = 0;
+        ${ band isdir, mode, STAT_ISDIR };
+        int isfile = 0;
+        ${ band isfile, mode, STAT_ISREG };
+        if (file[0] == ".")
+            continue;
+        if (isfile == STAT_ISREG && is_test(entry))
+            puffin["manifest_includes"].push(entry);
+
+        if (isdir == STAT_ISDIR)
+            get_all_tests(puffin, entry);
+    }
+}
+
+function is_test(string path)
+{
+    int len = length(path);
+    string ext = substr(path, len - 2);
+    if (ext == ".t")
+        return 1;
+    else
+        return 0;
+}
+
+function build_version_file(var puffin)
+{
+    using newer;
+    string file = "src/_build/_versions.winxed";
+    int e = 0;
+    ${ stat e, file, 0 };
+    if (!e || newer("VERSION", file))
+        build_and_compile_version_file(puffin);
+}
+
+function clean_version_file(var puffin)
+{
+    string file = "src/_build/_versions.winxed";
+    using unlink;
+    int e = 0;
+    ${ stat e, file, 0 };
+    if (e) {
+        say("unlink " + file);
+        unlink(file);
+    }
+}
+
+function build_and_compile_version_file(var puffin)
+{
+    print("Reading version information...");
+    var verfile = new 'FileHandle';
+    verfile.open('VERSION', 'r');
+    string text = verfile.readall();
+    verfile.close();
+    var lines = split("\n", text);
+
+    var code = new 'StringBuilder';
+    string preamble = <<:
+namespace Rosella { namespace __PRIVATE_Versions
+{
+    // This file is automatically generated by setup.winxed.
+    // DO NOT MODIFY THIS FILE YOURSELF
+    // Seriously, it's a bad idea.
+    function __SET_VERSIONS[anon,init,load]()
+    {
+        using Rosella.internal_set_version;
+:>>
+;
+    push(code, preamble);
+
+    for (string line in lines) {
+        var parts = split(': ', line);
+        if (elements(parts) != 2)
+            continue;
+        string libname = parts[0];
+        parts = split(' ', parts[1]);
+        push(code, sprintf("        internal_set_version('%s', '%s', '%s');\n", [libname, parts[0], parts[1]]));
+    }
+    string postamble = <<:
+    }
+}}
+:>>
+;
+    push(code, postamble);
+
+    var file = new 'FileHandle';
+    file.open("src/_build/_versions.winxed", "w");
+    file.print(string(code));
+    file.close();
+    say("done.");
+}
