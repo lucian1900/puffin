@@ -1,3 +1,5 @@
+using extern "io_ops";
+
 function main[main](argv)
 {
     setup_distutils();
@@ -21,7 +23,7 @@ function main[main](argv)
         "inst_lib"          : [],
         "installable_pbc"   : {},
         "include_winxed"    : {},
-        "manifest_includes" : ["setup.winxed"]
+        "manifest_includes" : ["VERSION", "setup.winxed"]
     };
 
     if (argv[1] == "test")
@@ -43,9 +45,9 @@ function setup_release(var puffin)
 
 function setup_stable_libraries(var puffin)
 {
-    setup_winxed_lib(puffin, "core", [],
+    setup_winxed_lib(puffin, "core§", [],
         "object",
-        "type",
+        "type"
     );
 }
 
@@ -99,7 +101,7 @@ function setup_lib_constants(var puffin, string name, string prefix, var args)
 function setup_distutils()
 {
     int e = 0;
-    string distutils = "puffin/winxed.pbc";
+    string distutils = "rosella/winxed.pbc";
     ${ stat e, distutils, 0 };
     if (e)
         load_bytecode(distutils);
