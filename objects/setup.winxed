@@ -1,3 +1,5 @@
+#!/usr/bin/env winxed --nowarn
+
 using extern "io_ops";
 
 function main[main](argv)
@@ -23,7 +25,7 @@ function main[main](argv)
         "inst_lib"          : [],
         "installable_pbc"   : {},
         "include_winxed"    : {},
-        "manifest_includes" : ["VERSION", "setup.winxed"]
+        "manifest_includes" : ["setup.winxed"]
     };
 
     if (argv[1] == "test")
@@ -118,7 +120,6 @@ function setup_distutils()
 // TODO: "build" first, before we test.
 function do_test()
 {
-    using get_nqp;
     string nqp = "parrot-nqp"; //get_nqp();
     string cmd = nqp + " t/harness";
     int result;
