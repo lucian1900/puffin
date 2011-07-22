@@ -1,5 +1,5 @@
 $load 'rosella/test.pbc';
-$load 'instance.pbc';
+$load 'puffin/builtins.pbc';
 
 class instance {
     function set_get_attr() {

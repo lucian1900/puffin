@@ -1,8 +1,5 @@
 $load 'rosella/test.pbc';
-$load 'instance.pbc';
-$load 'type.pbc';
-$load 'object.pbc';
-$load 'function.pbc';
+$load 'puffin/builtins.pbc';
 
 function funccls() {
     using Python.type;

@@ -1,6 +1,5 @@
 $load 'rosella/test.pbc';
-$load 'type.pbc';
-$load 'object.pbc';
+$load 'puffin/builtins.pbc';
 
 function boot() {
     using Python.type;

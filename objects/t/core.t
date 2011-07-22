@@ -1,5 +1,5 @@
 $load 'rosella/test.pbc';
-$load 'core.pbc';
+$load 'puffin/builtins.pbc';
 
 class Testcore {
     function test_object() {

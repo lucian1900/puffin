@@ -11,7 +11,7 @@ function main(argv) {
     
     var testrun = factory.create();
 
-    view.add_run(testrun);
+    view.add_run(testrun, 0);
     harness.run(testrun, view);
     view.show_results();
 }

@@ -1,7 +1,5 @@
 $load 'rosella/test.pbc';
-$load 'type.pbc';
-$load 'object.pbc';
-$load 'int.pbc';
+$load 'puffin/builtins.pbc';
 
 function intcls() {
     using Python.type;

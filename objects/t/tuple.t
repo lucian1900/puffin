@@ -1,7 +1,5 @@
 $load 'rosella/test.pbc';
-$load 'type.pbc';
-$load 'object.pbc';
-$load 'tuple.pbc';
+$load 'puffin/builtins.pbc';
 
 function tupcls() {
     using Python.type;

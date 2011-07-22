@@ -1,5 +1,5 @@
 $load 'rosella/test.pbc';
-$load 'boot.pbc';
+$load 'puffin/builtins.pbc';
 
 class boot {
     function builtins_call() {
