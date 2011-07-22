@@ -4,7 +4,7 @@ import ast
 
 head = '''
 .sub initial_load_bytecode :anon :load :init
-    load_bytecode 'boot.pbc'
+    load_bytecode 'puffin/builtins.pbc'
 .end
 
 .sub 'main' :main
