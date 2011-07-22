@@ -1,0 +1,17 @@
+$load 'rosella/core.pbc';
+$load 'rosella/harness.pbc';
+
+function main(argv) {
+    var factory = new Rosella.Harness.TestRun.Factory();
+    var harness = new Rosella.Harness();
+
+    var view = harness.default_view();
+    
+    factory.add_test_dirs("Winxed", "t", 1:[named("recurse")]);
+    
+    var testrun = factory.create();
+
+    view.add_run(testrun);
+    harness.run(testrun, view);
+    view.show_results();
+}

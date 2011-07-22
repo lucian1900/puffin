@@ -47,9 +47,16 @@ function setup_release(var puffin)
 
 function setup_stable_libraries(var puffin)
 {
-    setup_winxed_lib(puffin, "core", [],
+    setup_winxed_lib(puffin, "builtins", [],
+        "instance",
         "object",
-        "type"
+        "type",
+        "function",
+        "int",
+        "bool",
+        "tuple",
+        "list",
+        "dict"
     );
 }
 
@@ -120,8 +127,8 @@ function setup_distutils()
 // TODO: "build" first, before we test.
 function do_test()
 {
-    string nqp = "parrot-nqp"; //get_nqp();
-    string cmd = nqp + " t/harness";
+    string interp = "winxed";
+    string cmd = interp + " t/harness";
     int result;
     ${ spawnw result, cmd };
     ${ exit result };
