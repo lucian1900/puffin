@@ -16,7 +16,6 @@ def chdir(d):
     try: yield
     finally: os.chdir(cwd)
 
-
 class ParrotCommand(Command):
     description = 'proxy for a parrot distutils command'
     user_options = []
@@ -41,8 +40,6 @@ class ParrotBuild(ParrotCommand):
 class ParrotClean(ParrotCommand):
     command = 'clean'
 
-class ParrotTest(ParrotCommand):
-    command = 'test'
 
 setup(
     name = 'puffin',

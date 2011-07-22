@@ -105,10 +105,10 @@ def compile(code):
 
     return c.code
 
-if __name__ == '__main__':
+def main():
     import os
     import sys
-    
+
     if len(sys.argv) > 1:
         with open(sys.argv[1], 'r') as f:
             code = f.read()
@@ -119,3 +119,6 @@ if __name__ == '__main__':
         name = name.replace('.py', '.pir')
         with open(name, 'w') as f:
             f.write(pir)
+
+if __name__ == '__main__':
+    main()
