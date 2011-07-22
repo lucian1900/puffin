@@ -1,10 +1,21 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import subprocess
-from glob import glob
+
+from contextlib import contextmanager
 
 from distutils.core import setup, Command
+
+
+@contextmanager
+def chdir(d):
+    cwd= os.getcwd()
+    os.chdir(d)
+    try: yield
+    finally: os.chdir(cwd)
+
 
 class ParrotCommand(Command):
     description = 'proxy for a parrot distutils command'
@@ -17,20 +28,21 @@ class ParrotCommand(Command):
     def finalize_options(self): pass
 
     def run(self):
-        setup_path = os.path.join('objects', 'setup.winxed')
-
-        proc = subprocess.Popen(['winxed', setup_path, self.command],
-                                stdout=subprocess.PIPE)
+        with chdir(self.path):
+            proc = subprocess.Popen(
+                    ['winxed', '--nowarn', 'setup.winxed', self.command],
+                    stdout=subprocess.PIPE)
         
-        print(proc.communicate()[0])
+        print(proc.communicate()[0].decode(sys.getdefaultencoding()))
 
 class ParrotBuild(ParrotCommand):
-    def initialize_options(self):
-        self.command = 'build'
+    command = 'build'
 
 class ParrotClean(ParrotCommand):
-    def initialize_options(self):
-        self.command = 'clean'
+    command = 'clean'
+
+class ParrotTest(ParrotCommand):
+    command = 'test'
 
 setup(
     name = 'puffin',
@@ -43,5 +55,6 @@ setup(
 
     cmdclass = {'buildp': ParrotBuild,
                 'cleanp': ParrotClean,
+                'testp': ParrotTest,
     },
 )
