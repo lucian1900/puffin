@@ -112,7 +112,7 @@ function setup_distutils()
     if (e)
         load_bytecode(distutils);
     else {
-        say("Bootstrapping build with existing distutils library");
+        //say("Bootstrapping build with existing distutils library");
         load_bytecode("src/winxed/Distutils.bootstrap.pir");
     }
 

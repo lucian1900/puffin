@@ -2,12 +2,9 @@ Puffin has two main components:
  - the object system in objects/
  - the compiler in puffin/
 
-At the time of this writing, only the object system has a working build/test system.
-
 To build and run the tests on the object system, do this:
 
-cd objects
-./setup.winxed build
-./setup.winxed test
+./setup.py buildp
+./setup.py testp
 
 
