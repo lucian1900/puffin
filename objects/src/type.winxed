@@ -1,5 +1,3 @@
-$load 'instance.pbc';
-
 namespace Python {
 
 function type() {

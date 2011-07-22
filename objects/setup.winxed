@@ -53,10 +53,7 @@ function setup_stable_libraries(var puffin)
         "type",
         "function",
         "int",
-        "bool",
-        "tuple",
-        "list",
-        "dict"
+        "tuple"
     );
 }
 

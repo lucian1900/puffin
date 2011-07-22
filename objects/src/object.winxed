@@ -1,6 +1,3 @@
-$load 'instance.pbc';
-$load 'type.pbc';
-
 namespace Python {
 
 function object(type) {

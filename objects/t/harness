@@ -1,4 +1,3 @@
-$load 'rosella/core.pbc';
 $load 'rosella/harness.pbc';
 
 function main(argv) {
