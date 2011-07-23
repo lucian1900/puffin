@@ -17,23 +17,21 @@ tail = '.end'
 get_attr = '''$P1 = builtins["{0}"]
 $P2 = getattribute $P1, "{1}"\n'''
 
-class Frame:
-    def __init__(self):
-        pass
-
 class Codegen(ast.NodeVisitor):
 
     def __init__(self):
         super().__init__()
 
-        self.decls = []
+        self.literals = []
         self.funs = []
-        self.pir = []
+        self.main = []
+
+        self.pir = self.main
     
     @property
     def code(self):
         pir = head
-        pir += ''.join(self.decls + self.pir)
+        pir += ''.join(self.literals + self.funs + self.pir)
         pir += tail
         return pir
 
@@ -54,19 +52,19 @@ class Codegen(ast.NodeVisitor):
         self.pir += ' + '
 
     def visit_Num(self, node):
-        self.decls += get_attr.format('int', '__new__')
-        self.decls += "$P3 = $P2({0})\n".format(node.n)
+        self.literals += get_attr.format('int', '__new__')
+        self.literals += "$P3 = $P2({0})\n".format(node.n)
 
         self.pir += "$P3"
 
     def visit_Str(self, node):
-        self.decls += get_attr.format('str', '__new__')
-        self.decls += "$P3 = $P2('{0}')\n".format(node.s)
+        self.literals += get_attr.format('str', '__new__')
+        self.literals += "$P3 = $P2('{0}')\n".format(node.s)
 
         self.pir += "$P3"
 
     def visit_Call(self, node):
-        # special-case for print. for now
+        # shg clone ssh://hg@bitbucket.org/pypy/pypypecial-case for print. for now
         if node.func.id == 'print':
             self.pir += '\n'
 
@@ -109,9 +107,10 @@ class Codegen(ast.NodeVisitor):
         node.args.defaults #list
         node.body #list
         '''
+        self.pir = self.funs # redirect everything to function definition
 
         # for now, the name is used verbatim. this guarantees clashes
-        self.funs += '.sub {0}\n'.format(node.name)
+        self.pir += '.sub {0}\n'.format(node.name)
         
         #TODO handle args
     
@@ -119,7 +118,9 @@ class Codegen(ast.NodeVisitor):
         for i in node.body:
             super().generic_visit(i)
 
-        self.funs += '.end\n'
+        self.pir += '.end\n'
+
+        self.pir = self.main
 
 def compile(code):
     t = ast.parse(code)
