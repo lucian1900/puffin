@@ -27,6 +27,7 @@ class Codegen(ast.NodeVisitor):
         super().__init__()
 
         self.decls = []
+        self.funs = []
         self.pir = []
     
     @property
@@ -60,7 +61,7 @@ class Codegen(ast.NodeVisitor):
 
     def visit_Str(self, node):
         self.decls += get_attr.format('str', '__new__')
-        self.decls += "$P3 = $P2('{0}')\n".format(node.n)
+        self.decls += "$P3 = $P2('{0}')\n".format(node.s)
 
         self.pir += "$P3"
 
@@ -97,6 +98,28 @@ class Codegen(ast.NodeVisitor):
 
     def visit_Store(self, node):
         self.pir += ' = '
+
+    def visit_FunctionDef(self, node):
+        '''
+        Types of things inside
+
+        node.name #str
+        node.args #_ast.arguments
+        node.args.args #list
+        node.args.defaults #list
+        node.body #list
+        '''
+
+        # for now, the name is used verbatim. this guarantees clashes
+        self.funs += '.sub {0}\n'.format(node.name)
+        
+        #TODO handle args
+    
+        #TODO get this actually written into self.funcs
+        for i in node.body:
+            super().generic_visit(i)
+
+        self.funs += '.end\n'
 
 def compile(code):
     t = ast.parse(code)
