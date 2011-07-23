@@ -33,6 +33,14 @@ class int {
         self.assert.equal(f(i).__value__, 0);
     }
 
+    function create_one() {
+        var i = intcls();
+	var f = i.__new__;
+
+	var a = f(i, 1);
+	self.assert.equal(a.__value__, 1);
+    }
+
     function repr() {
         var i = intcls();
         var f = i.__new__;
@@ -49,7 +57,8 @@ class int {
         var b = f(i, 22);
 
         var add = i.__add__;
-        self.assert.equal(add(a, b).__value__, 42);
+	var r = add(a, b);
+        self.assert.equal(r.__value__, 42);
     }
 }
 

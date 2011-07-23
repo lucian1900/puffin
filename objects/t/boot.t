@@ -3,9 +3,8 @@ $load 'puffin/builtins.pbc';
 
 class boot {
     function builtins_call() {
-        using Python.builtins;
-
         self.assert.throws_nothing(function(){
+            using Python.builtins;
             builtins();
         });
     }

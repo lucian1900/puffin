@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+
+from puffin.compiler import main
+
+main()

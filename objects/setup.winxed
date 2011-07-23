@@ -48,6 +48,7 @@ function setup_release(var puffin)
 function setup_stable_libraries(var puffin)
 {
     setup_winxed_lib(puffin, "builtins", [],
+        "boot",
         "instance",
         "object",
         "type",
