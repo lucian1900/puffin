@@ -1,4 +1,4 @@
-#!/usr/bin/env winxed --nowarn
+#!/usr/bin/env winxed
 
 using extern "io_ops";
 

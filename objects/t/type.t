@@ -12,11 +12,28 @@ function boot() {
 }
 
 class type {
+
     function boot() {
         self.assert.throws_nothing(function(){
             :(var t, var o) = boot();
         });
     }
+
+    function set_attr() {
+        :(var t, var o) = boot();
+	
+        o.a = 42;
+	say(o.__dict__['__name__']);
+	self.assert.equal(o.__dict__['a'], 42);
+    }
+
+    function get_attr() {
+        :(var t, var o) = boot();
+
+        o.a = 42;
+	self.assert.equal(o.a, 42);
+    }
+
 
     function type_init() {
         :(var t, var o) = boot();

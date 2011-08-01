@@ -9,7 +9,7 @@ function object(type) {
     t.__name__ = 'object';
     t.__module__ = 'builtins';
 
-    type.__bases__.push(t);
+    type.__bases__ = [t];
 
     t.__new__ = function(cls) {
         var o = new Python.instance;

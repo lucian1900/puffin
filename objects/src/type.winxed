@@ -4,7 +4,6 @@ function type() {
     var t = new Python.instance;
 
     t.__class__ = t;
-    t.__bases__ = [];
 
     t.__name__ = 'type';
     t.__module__ = 'builtins';
@@ -47,37 +46,56 @@ function type() {
     t.__getattribute__ = function(obj, key) {
         var cls = obj.__dict__['__class__'];
         
-        //first try descriptor
+        // first try descriptor among class attrs
         if(exists cls.__dict__[key]) {
             var attr = cls.__dict__[key];
-
-            if(typeof(attr) == 'Python;instance' &&
-                exists attr.__dict__['__get__']) {
-
-                var descriptor = attr.__dict__['__get__'];
-                return descriptor(attr, obj);
-            }
+    
+             // if data-descriptor
+             if(exists attr.__dict__['__get__'] &&
+                exists attr.__dict__['__set__']) {
+                 return attr.__dict__['__get__'](attr, obj);
+             }
         }
-        //TODO then descriptors of parents
 
-        // then try instance
-        if(exists obj.__dict__[key])
-            return obj.__dict__[key];
+        // then attr on actual obj
+        if(exists obj.__dict__[key]) {
+            var attr = obj.__dict__[key];
 
-        // then class
-        if(exists cls.__dict__[key])
-            return cls.__dict__[key];
+            // if obj is a class
+            if(id(cls) == id(t)) {
+                
+                // TODO check the class, also for descriptors
+                // TODO also check its bases
+            }
 
-        //TODO then parent classes
-        for(var i in cls.__dict__['__bases__']) {
-            if(exists i.__dict__[key])
-                return i.__dict__[key];
+            return attr;
+        }
+
+        // then on the obj's class
+        // TODO also base classes
+        if(exists cls.__dict__[key]) {
+            var attr = cls.__dict__[key];
+            
+            // if non-data descriptor
+            if(exists attr.__dict__['__get__'])
+                return attr.__dict__['__get__'](attr, obj);
+
+            return attr;
         }
 
         // throw AttributeError
     };
 
     t.__setattr__ = function(obj, key, val) {
+        var cls = obj.__dict__['__class__'];
+    
+        if(exists cls.__dict__[key]) {
+            var attr = cls.__dict__[key];
+
+            if(exists attr.__dict__['__set__'])
+                attr.__dict__['__set__'](attr, obj, val);
+        }
+
         obj.__dict__[key] = val;
     };
 

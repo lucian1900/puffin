@@ -7,17 +7,17 @@ function id(obj) {
 }
 
 function get_mro(cls) {
-    var list = [cls];
-   
-    // add the classes in the first level
-    for(var i in cls.__bases__)
-        list.push(i);
+    var bases = cls.__dict__['__bases__'];
+    var result = [cls];
 
-    // recurse down
-    for(var i in cls.__bases__)
-        list.append(get_mro(i));
-        
-    return list;
+    //say(typeof(bases));
+
+    for(int i=0; i < length(bases); i++) {
+        //say(i);
+        result.append(get_mro(bases[i]));
+    }
+
+    return result;
 }
 
 class instance {
@@ -30,23 +30,27 @@ class instance {
     }
 
     function invoke[vtable](var p [slurpy], var n [slurpy,named]) {
-        var sub = self.__call__;
-        if (self.__call__ == null) say('object not callable');
+        var sub;
 
-        // if sub is a parrot sub, it'll get executed
-        // if sub is an instance with __call__, this invoke will get called
-        //   all the way down to a sub
+        if(self.__class__ != null)
+            sub = self.__class__.__call__;
+
+        // if sub is a parrot Sub, it'll get executed
+        // if sub is an instance with __call__, this invoke will get called,
+        //   all the way down to a Sub somewhere
         return sub(p:[flat], n:[flat,named]);
     }
-/*
+
     function find_method[vtable](string name) {
-        var fn = name;
-        
-        return function(obj, p[slurpy], n[slurpy,named]) {
-            
-        }
+        // likely broken
+        var method = self.__dict__[name];
+
+        // closure to soak up the obj
+        return function(var obj, var p[slurpy], var n[slurpy,named]) {
+            return method(p:[flat], n:[flat,named]);
+        };
     }
-*/
+
     function get_pmc_keyed_str[vtable,nsentry](string name) {
         var dict;
         var protoclass = class Python.instance;
@@ -56,15 +60,16 @@ class instance {
             if(i == name && exists dict[i])
                 return dict[i];
 
-        // let objects override it
+        // let object classes override it
+        // since this is only used for boostrapping, bases are ignored
         if(exists dict['__class__']) {
-            var mro = get_mro(dict['__class__']);
+            var cls = dict['__class__'];
 
-            for(var i in mro)
-                if(exists i.__dict__['__getattribute__'])
-                    return i.__dict__['__getattribute__'](self, name);
+            if(exists cls.__dict__['__getattribute__'])
+                return cls.__dict__['__getattribute__'](self, name);
 
         }
+
         //TODO check for missing
         return dict[name];
     }
@@ -74,14 +79,17 @@ class instance {
         var protoclass = class Python.instance;
         ${ getattribute dict, self, protoclass, '__dict__' };
        
-        // __dict__ short-circuit
-        if(name == '__dict__')
-            dict = value; //TODO use setattribute to swap dict
-        // let objects override it
-        else if(exists dict['__setattr__'])
-            dict['__setattr__'](self, name, value);
-        else
-            dict[name] = value;
+        // let object classes override it
+        if(exists dict['__class__']) {
+            var cls = dict['__class__'];
+
+            if(exists cls.__dict__['__setattr__'])
+                cls.__dict__['__setattr__'](self, name, value);
+
+            return;
+        }
+
+        dict[name] = value;
     }
 
     function get_attr_str[vtable] (string name) {

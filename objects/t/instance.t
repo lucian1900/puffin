@@ -2,6 +2,32 @@ $load 'rosella/test.pbc';
 $load 'puffin/builtins.pbc';
 
 class instance {
+    function get_mro() {
+        /* a, b, c, d are all classes
+	Inheritance chain looks like this"
+        d
+        | \
+        b c
+        \ |
+         a
+	*/
+        var a = new Python.instance;
+        var b = new Python.instance;
+        var c = new Python.instance;
+        var d = new Python.instance;
+
+        d.__bases__ = [];
+        b.__bases__ = [d];
+        c.__bases__ = [c];
+        a.__bases__ = [b, c];
+
+        using Python.get_mro;
+        var mro = get_mro(a);
+	say(mro);
+
+	self.assert.equal(mro, [a, b, c, d]);
+    }
+
     function set_get_attr() {
         var i = new Python.instance;
         i.a = 2;
@@ -16,13 +42,32 @@ class instance {
         self.assert.equal(i.__bases__, [1, 2]);
     }
 
-    function getattribute() {
+    function get_attr_override() {
         var i = new Python.instance;
-        i.__getattribute__ = function(obj, name) {
+	var c = new Python.instance;
+
+	i.__class__ = c;
+
+        c.__getattribute__ = function(obj, name) {
             return 42;
         };
-        
+
         self.assert.equal(i.a, 42);
+    }
+    
+    function set_attr_override() {
+        var i = new Python.instance;
+	var c = new Python.instance;
+
+        i.__class__ = c;
+
+	c.__setattr__ = function(obj, name, value) {
+            obj.__dict__[name] = 42;
+        };
+
+	i.a = 2;
+
+	self.assert.equal(i.a, 42);
     }
 
     function call_func() {
@@ -30,7 +75,7 @@ class instance {
         i.b = function(){return 42;};
 
         var func = i.b;
-        self.assert.equal(func(), 42);
+        self.assert.equal(i.b(), 42);
     }
 
     function call_func_attr() {
@@ -38,7 +83,7 @@ class instance {
         i.f = function(a, b){return a + b;};
 
         var func = i.f;
-        self.assert.equal(func(1, 2), 3);
+        self.assert.equal(i.f(1, 2), 3);
     }
 
     function get_string() {
@@ -50,14 +95,12 @@ class instance {
 
     function call() {
         var i = new Python.instance;
-        i.__call__ = function(){return 42;};
+	var c = new Python.instance;
+
+	i.__class__ = c;
+        c.__call__ = function(){return 42;};
 
         self.assert.equal(i(), 42);
-    }
-
-    function get_mro() {
-        self.status.unimplemented('writeme');
-        using Python.get_mro;
     }
 }
 
