@@ -165,3 +165,4 @@ function main() {
     test(class type);
 }
 
+// vim:set filetype=winxed:

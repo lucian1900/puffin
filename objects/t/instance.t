@@ -4,17 +4,22 @@ $load 'puffin/builtins.pbc';
 class instance {
     function get_mro() {
         /* a, b, c, d are all classes
-	Inheritance chain looks like this"
+        Inheritance chain looks like this"
         d
         | \
         b c
         \ |
          a
-	*/
+        */
         var a = new Python.instance;
         var b = new Python.instance;
         var c = new Python.instance;
         var d = new Python.instance;
+
+        a.__name__ = 'a';
+        b.__name__ = 'b';
+        c.__name__ = 'c';
+        d.__name__ = 'd';
 
         d.__bases__ = [];
         b.__bases__ = [d];
@@ -23,9 +28,10 @@ class instance {
 
         using Python.get_mro;
         var mro = get_mro(a);
-	say(mro);
-
-	self.assert.equal(mro, [a, b, c, d]);
+        
+        //for(var i in mro) {say(i.__name__);}
+        
+        self.assert.equal(mro, [a, b, c, d]);
     }
 
     function set_get_attr() {
@@ -44,9 +50,9 @@ class instance {
 
     function get_attr_override() {
         var i = new Python.instance;
-	var c = new Python.instance;
+        var c = new Python.instance;
 
-	i.__class__ = c;
+        i.__class__ = c;
 
         c.__getattribute__ = function(obj, name) {
             return 42;
@@ -57,17 +63,17 @@ class instance {
     
     function set_attr_override() {
         var i = new Python.instance;
-	var c = new Python.instance;
+        var c = new Python.instance;
 
         i.__class__ = c;
 
-	c.__setattr__ = function(obj, name, value) {
+        c.__setattr__ = function(obj, name, value) {
             obj.__dict__[name] = 42;
         };
 
-	i.a = 2;
+        i.a = 2;
 
-	self.assert.equal(i.a, 42);
+        self.assert.equal(i.a, 42);
     }
 
     function call_func() {
@@ -95,9 +101,9 @@ class instance {
 
     function call() {
         var i = new Python.instance;
-	var c = new Python.instance;
+        var c = new Python.instance;
 
-	i.__class__ = c;
+        i.__class__ = c;
         c.__call__ = function(){return 42;};
 
         self.assert.equal(i(), 42);
@@ -109,3 +115,4 @@ function main() {
     test(class instance);
 }
 
+// vim:set filetype=winxed:

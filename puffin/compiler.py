@@ -6,33 +6,37 @@ head = '''
 .sub initial_load_bytecode :anon :load :init
     load_bytecode 'puffin/builtins.pbc'
 .end
+'''
 
+main_head = '''
 .sub 'main' :main
     get_hll_global $P2, [ 'Python' ] , 'builtins'
     .local pmc builtins
     builtins = $P2()
 '''
-tail = '.end'
+main_tail = '.end'
 
 get_attr = '''$P1 = builtins["{0}"]
 $P2 = getattribute $P1, "{1}"\n'''
+
+local_params = '''.local pmc locals = new "Hash"'''
 
 class Codegen(ast.NodeVisitor):
 
     def __init__(self):
         super().__init__()
 
-        self.literals = []
         self.funs = []
         self.main = []
+        self.literals = []
 
         self.pir = self.main
     
     @property
     def code(self):
         pir = head
-        pir += ''.join(self.literals + self.funs + self.pir)
-        pir += tail
+        pir += ''.join(self.literals + self.funs)
+        pir += main_head + ''.join(self.pir) + main_tail
         return pir
 
     def generic_visit(self, node):
@@ -44,7 +48,9 @@ class Codegen(ast.NodeVisitor):
     def visit_Module(self, node):
         self.pir += '''
         .local pmc globals
-        globals = new "Hash"\n'''
+        .local pmc locals
+        globals = new "Hash"
+        locals = globals\n'''
 
         super().generic_visit(node)
 
@@ -53,25 +59,25 @@ class Codegen(ast.NodeVisitor):
 
     def visit_Num(self, node):
         self.literals += get_attr.format('int', '__new__')
-        self.literals += "$P3 = $P2({0})\n".format(node.n)
+        self.literals += "$P3 = $P2({})\n".format(node.n)
 
         self.pir += "$P3"
 
     def visit_Str(self, node):
         self.literals += get_attr.format('str', '__new__')
-        self.literals += "$P3 = $P2('{0}')\n".format(node.s)
+        self.literals += "$P3 = $P2('{}')\n".format(node.s)
 
         self.pir += "$P3"
 
     def visit_Call(self, node):
-        # shg clone ssh://hg@bitbucket.org/pypy/pypypecial-case for print. for now
+        # special-case for print. for now
         if node.func.id == 'print':
             self.pir += '\n'
 
             regs = []
             for i, e in enumerate(node.args):
-                regs += '$P{0}'.format(i)
-                self.pir += '$P{0} = '.format(i)
+                regs += '$P{}'.format(i)
+                self.pir += '$P{} = '.format(i)
 
                 super().visit(e)
                 self.pir += '\n'
@@ -81,16 +87,8 @@ class Codegen(ast.NodeVisitor):
                 self.pir += i
             self.pir += '\n'
 
-    def visit_AugAssign(self, node):
-        super().generic_visit(node.target)
-        super().generic_visit(node.op)
-
-        #super().generic_visit(node)
-
-        super().generic_visit(node.value)
-
     def visit_Name(self, node): 
-        self.pir += "globals['{0}']".format(node.id)
+        self.pir += "locals['{}']".format(node.id)
 
         super().generic_visit(node)
 
@@ -110,15 +108,23 @@ class Codegen(ast.NodeVisitor):
         self.pir = self.funs # redirect everything to function definition
 
         # for now, the name is used verbatim. this guarantees clashes
-        self.pir += '.sub {0}\n'.format(node.name)
+        self.pir += '.sub {}\n'.format(node.name)\
+
+        self.pir += '.param pmc args\n'
+        self.pir += '.param pmc kwargs\n'
+
+        self.pir += '''.local pmc locals
+        locals = new "Hash"\n'''
         
-        #TODO handle args
+        for i in node.args.args:
+            pass #TODO check args
+
+        #TODO handle defaults
     
-        #TODO get this actually written into self.funcs
         for i in node.body:
             super().generic_visit(i)
 
-        self.pir += '.end\n'
+        self.pir += '\n.end\n'
 
         self.pir = self.main
 

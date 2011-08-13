@@ -11,12 +11,13 @@ function get_mro(cls) {
     var result = [cls];
 
     //say(typeof(bases));
+    //say(length(bases));    
 
-    for(int i=0; i < length(bases); i++) {
-        //say(i);
-        result.append(get_mro(bases[i]));
+    for(var i in bases) {
+        say(i.__name__);
+        //result.append(get_mro(i));
     }
-
+    
     return result;
 }
 

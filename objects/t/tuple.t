@@ -59,3 +59,5 @@ function main() {
     using Rosella.Test.test;
     test(class tuple);
 }
+
+// vim:set filetype=winxed:

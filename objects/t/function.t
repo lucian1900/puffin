@@ -64,3 +64,5 @@ function main() {
     using Rosella.Test.test;
     test(class func);
 }
+
+// vim:set filetype=winxed:

@@ -66,3 +66,5 @@ function main() {
     using Rosella.Test.test;
     test(class int);
 }
+
+// vim:set filetype=winxed:

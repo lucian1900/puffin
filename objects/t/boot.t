@@ -33,6 +33,7 @@ class boot {
     }
 }
 
+// vim:set filetype=winxed:
 function main() {
     using Rosella.Test.test;
     test(class boot);
