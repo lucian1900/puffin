@@ -9,3 +9,4 @@ __pycache__
 *.pbc
 *.pir
 *.sublime-project
+objects/puffin/*
