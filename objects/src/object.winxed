@@ -21,11 +21,10 @@ function object(type) {
     t.__init__ = function(obj) {};
 
     t.__call__ = function() {
-        var f = t.__new__;
-        var n = f(t);
-        //f = n.__init__;
-        //f(n);
+        say('creating object instance');
+        var n = t.__new__(t);
         n.__init__(n);
+
         return n;
     };
 

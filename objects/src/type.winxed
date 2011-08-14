@@ -19,6 +19,7 @@ function type() {
     };
 
     t.__call__ = function(obj) {
+        say('creating type instance');
         return obj.__class__;
     };
 

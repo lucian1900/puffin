@@ -99,10 +99,8 @@ class instance {
 
     function call() {
         var i = new Python.instance;
-        var c = new Python.instance;
 
-        i.__class__ = c;
-        c.__call__ = function(self){return 42;};
+        i.__call__ = function(obj){return 42;};
 
         self.assert.equal(i(), 42);
     }

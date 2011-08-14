@@ -111,14 +111,11 @@ class type {
         :(var t, var o) = boot();
 
         var i = o();
-        say(i.__class__.__name__);
         
-        //self.assert.same(i.__class__, o);
+        self.assert.same(i.__class__, o); // it's t instead of o for some reason
     }
         
     function instance_get() {
-        self.status.todo('__getattribute__ broken for now.');
-
         :(var t, var o) = boot();
 
         var func = o.__new__;
@@ -155,20 +152,19 @@ class type {
     function instance_set_attr() {
         :(var t, var o) = boot();
 
-        var func = o.__new__;    
-        var i = func(o);
+        var i = o.__new__(o);
         i.foo = 'bar';
+
         self.assert.equal(i.foo, 'bar');
     }
 
     function non_data_descriptor() {
         :(var t, var o) = boot();
-        var f = o.__new__;
-        var i = f(o);
-    
-        i.__get__ = function(attr, obj) {return 42;};
 
+        var i = o.__new__(o);
+        i.__get__ = function(obj, attr) {return 42;};
         t.i = i;
+
         self.assert.equal(t.i, 42);
     }
 }
