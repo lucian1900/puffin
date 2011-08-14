@@ -102,7 +102,7 @@ class instance {
         var c = new Python.instance;
 
         i.__class__ = c;
-        c.__call__ = function(){return 42;};
+        c.__call__ = function(self){return 42;};
 
         self.assert.equal(i(), 42);
     }

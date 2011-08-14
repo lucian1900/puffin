@@ -56,6 +56,8 @@ function type() {
                  return attr.__dict__['__get__'](attr, obj);
              }
         }
+        
+        var chain = get_mro(cls);
 
         // then attr on actual obj
         if(exists obj.__dict__[key]) {
@@ -64,37 +66,43 @@ function type() {
             // if obj is a class
             if(id(cls) == id(t)) {
                  
-                var chain = get_mro(cls);
-                // TODO check the class, also for descriptors
-                // TODO also check its bases
+                for(var i in chain) {
+                    if(exists i.__dict__['__get__'])
+                        attr = i.__dict__['__get__'](i, obj);
+                }
             }
 
             return attr;
         }
 
         // then on the obj's class
-        // TODO also base classes
-        if(exists cls.__dict__[key]) {
-            var attr = cls.__dict__[key];
+        for(var i in chain) {
+            if(exists i.__dict__[key]) {
+                var attr = i.__dict__[key];
             
-            // if non-data descriptor
-            if(exists attr.__dict__['__get__'])
-                return attr.__dict__['__get__'](attr, obj);
+                // if non-data descriptor
+                if(exists attr.__dict__['__get__'])
+                    return attr.__dict__['__get__'](attr, obj);
 
-            return attr;
+                return attr;
+            }
         }
 
         // throw AttributeError
     };
 
     t.__setattr__ = function(obj, key, val) {
+        say('calling setattr override');
         var cls = obj.__dict__['__class__'];
     
         if(exists cls.__dict__[key]) {
+            say('using data descriptor');
             var attr = cls.__dict__[key];
 
-            if(exists attr.__dict__['__set__'])
+            if(exists attr.__dict__['__set__']) {
                 attr.__dict__['__set__'](attr, obj, val);
+                return;
+            }
         }
 
         obj.__dict__[key] = val;

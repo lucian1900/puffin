@@ -23,15 +23,15 @@ class type {
         :(var t, var o) = boot();
 	
         o.a = 42;
-	say(o.__dict__['__name__']);
-	self.assert.equal(o.__dict__['a'], 42);
+        say(o.__dict__['__name__']);
+        self.assert.equal(o.__dict__['a'], 42);
     }
 
     function get_attr() {
         :(var t, var o) = boot();
 
         o.a = 42;
-	self.assert.equal(o.a, 42);
+        self.assert.equal(o.a, 42);
     }
 
 

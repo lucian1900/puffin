@@ -54,7 +54,7 @@ class instance {
         // if sub is a parrot Sub, it'll get executed
         // if sub is an instance with __call__, this invoke will get called,
         //   all the way down to a Sub somewhere
-        return sub(p:[flat], n:[flat,named]);
+        return sub(self, p:[flat], n:[flat,named]);
     }
 
     function find_method[vtable](string name) {
@@ -72,9 +72,8 @@ class instance {
         var protoclass = class Python.instance;
         ${ getattribute dict, self, protoclass, '__dict__' };
     
-        for(var i in ['__dict__', '__bases__', '__class__', '__new__'])
-            if(i == name && exists dict[i])
-                return dict[i];
+        if(name == '__dict__')
+            return dict;
 
         // let object classes override it
         // since this is only used for boostrapping, bases are ignored
@@ -86,7 +85,6 @@ class instance {
 
         }
 
-        //TODO check for missing
         return dict[name];
     }
 
