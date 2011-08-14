@@ -15,9 +15,13 @@ function in(arr, item) {
 }
  
 function get_parents(cls) {
-
-    var bases = cls.__dict__['__bases__'];
     var result = [];
+
+    // if not fully boostrapped yet, don't bother
+    if(!exists cls.__dict__['__bases__'])
+        return result;
+        
+    var bases = cls.__dict__['__bases__'];
 
     result.append(bases);
     
@@ -76,13 +80,14 @@ class instance {
             return dict;
 
         // let object classes override it
-        // since this is only used for boostrapping, bases are ignored
         if(exists dict['__class__']) {
             var cls = dict['__class__'];
+            var chain = get_mro(cls);
 
-            if(exists cls.__dict__['__getattribute__'])
-                return cls.__dict__['__getattribute__'](self, name);
-
+            for(var i in chain) {
+                if(exists i.__dict__['__getattribute__'])
+                    return i.__dict__['__getattribute__'](self, name);
+            }
         }
 
         return dict[name];

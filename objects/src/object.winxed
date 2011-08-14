@@ -2,9 +2,12 @@ namespace Python {
 
 function object(type) {
     var t = new Python.instance;
-
+    
+    //say('created object');
     t.__class__ = type;
+    //say('set class');
     t.__bases__ = [];
+    //say('set bases');
 
     t.__name__ = 'object';
     t.__module__ = 'builtins';

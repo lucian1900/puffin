@@ -19,6 +19,14 @@ class type {
         });
     }
 
+    function bases() {
+        :(var t, var o) = boot();
+
+        for(var i in o.__dict__) {say(i);};
+
+        self.assert.equal(o.__dict__['__bases__'], [t]);
+    }
+
     function set_attr() {
         :(var t, var o) = boot();
 	

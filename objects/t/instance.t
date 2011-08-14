@@ -4,7 +4,7 @@ $load 'puffin/builtins.pbc';
 class instance {
     function get_mro() {
         /* a, b, c, d are all classes
-        Inheritance chain looks like this"
+        Inheritance chain looks like this
         d
         | \
         b c
