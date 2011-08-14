@@ -29,7 +29,7 @@ class instance {
         using Python.get_mro;
         var mro = get_mro(a);
         
-        self.assert.equal(mro, [b, c, d]);
+        self.assert.equal(mro, [a, b, c, d]);
     }
 
     function set_get_attr() {

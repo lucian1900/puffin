@@ -63,7 +63,8 @@ function type() {
 
             // if obj is a class
             if(id(cls) == id(t)) {
-                
+                 
+                var chain = get_mro(cls);
                 // TODO check the class, also for descriptors
                 // TODO also check its bases
             }

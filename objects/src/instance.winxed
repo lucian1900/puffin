@@ -14,7 +14,7 @@ function in(arr, item) {
     return false;
 }
  
-function get_mro(cls) {
+function get_parents(cls) {
 
     var bases = cls.__dict__['__bases__'];
     var result = [];
@@ -22,15 +22,18 @@ function get_mro(cls) {
     result.append(bases);
     
     for(var i in bases) {
-        //say(i.__name__);
-        var parent_bases = get_mro(i);
-
-        for(var j in parent_bases) 
+        for(var j in get_parents(i)) 
             if(!in(result, j))
                 result.push(j);
     }
     
     return result;
+}
+
+function get_mro(cls) {
+    var chain = get_parents(cls);
+    chain.unshift(cls);
+    return chain;
 }
 
 class instance {
