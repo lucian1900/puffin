@@ -23,15 +23,13 @@ class instance {
 
         d.__bases__ = [];
         b.__bases__ = [d];
-        c.__bases__ = [c];
+        c.__bases__ = [d];
         a.__bases__ = [b, c];
 
         using Python.get_mro;
         var mro = get_mro(a);
         
-        //for(var i in mro) {say(i.__name__);}
-        
-        self.assert.equal(mro, [a, b, c, d]);
+        self.assert.equal(mro, [b, c, d]);
     }
 
     function set_get_attr() {

@@ -6,16 +6,28 @@ function id(obj) {
     return addr;
 }
 
+function in(arr, item) {
+    for(var i in arr)
+        if(id(i) == id(item))
+            return true;
+
+    return false;
+}
+ 
 function get_mro(cls) {
+
     var bases = cls.__dict__['__bases__'];
-    var result = [cls];
+    var result = [];
 
-    //say(typeof(bases));
-    //say(length(bases));    
-
+    result.append(bases);
+    
     for(var i in bases) {
-        say(i.__name__);
-        //result.append(get_mro(i));
+        //say(i.__name__);
+        var parent_bases = get_mro(i);
+
+        for(var j in parent_bases) 
+            if(!in(result, j))
+                result.push(j);
     }
     
     return result;
