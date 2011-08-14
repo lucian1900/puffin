@@ -3,11 +3,8 @@ namespace Python {
 function object(type) {
     var t = new Python.instance;
     
-    //say('created object');
     t.__class__ = type;
-    //say('set class');
     t.__bases__ = [];
-    //say('set bases');
 
     t.__name__ = 'object';
     t.__module__ = 'builtins';
@@ -23,11 +20,12 @@ function object(type) {
 
     t.__init__ = function(obj) {};
 
-    t.__call__ = function(cls) {
-        var f = cls.__new__;
-        var n = f(cls);
-        f = n.__init__;
-        f(n);
+    t.__call__ = function() {
+        var f = t.__new__;
+        var n = f(t);
+        //f = n.__init__;
+        //f(n);
+        n.__init__(n);
         return n;
     };
 

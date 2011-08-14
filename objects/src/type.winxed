@@ -44,18 +44,17 @@ function type() {
     t.__str__ = t.__repr__;
 
     t.__getattribute__ = function(obj, key) {
-        say(typeof(obj));
         var cls = obj.__dict__['__class__'];
         
         // first try descriptor among class attrs
         if(exists cls.__dict__[key]) {
             var attr = cls.__dict__[key];
-    
-             // if data-descriptor
-             if(exists attr.__dict__['__get__'] &&
-                exists attr.__dict__['__set__']) {
-                 return attr.__dict__['__get__'](attr, obj);
-             }
+   
+            // only for python objects
+            if(typeof(attr) == 'Python;instance')
+                // if data-descriptor
+                if(exists attr.__dict__['__get__'] && exists attr.__dict__['__set__'])
+                    return attr.__dict__['__get__'](attr, obj);
         }
         
         var chain = get_mro(cls);
@@ -65,13 +64,10 @@ function type() {
             var attr = obj.__dict__[key];
 
             // if obj is a class
-            if(id(cls) == id(t)) {
-                 
-                for(var i in chain) {
+            if(id(cls) == id(t))
+                for(var i in chain)
                     if(exists i.__dict__['__get__'])
                         attr = i.__dict__['__get__'](i, obj);
-                }
-            }
 
             return attr;
         }
@@ -81,9 +77,16 @@ function type() {
             if(exists i.__dict__[key]) {
                 var attr = i.__dict__[key];
             
-                // if non-data descriptor
-                if(exists attr.__dict__['__get__'])
-                    return attr.__dict__['__get__'](attr, obj);
+                // only for python objects
+                if(typeof(attr) == 'Python;instance') {
+                
+                    // if data-descriptor
+                    if(exists attr.__dict__['__get__'] && exists attr.__dict__['__set__'])
+                        return attr.__dict__['__get__'](attr, obj);
+                    // if non-data descriptor
+                    if(exists attr.__dict__['__get__'])
+                        return attr.__dict__['__get__'](attr, obj);
+                }
 
                 return attr;
             }
@@ -93,18 +96,19 @@ function type() {
     };
 
     t.__setattr__ = function(obj, key, val) {
-        say('calling setattr override');
         var cls = obj.__dict__['__class__'];
-    
+        
+        /* disable data descriptors for now
         if(exists cls.__dict__[key]) {
-            say('using data descriptor');
             var attr = cls.__dict__[key];
 
             if(exists attr.__dict__['__set__']) {
+                say('using data descriptor');
                 attr.__dict__['__set__'](attr, obj, val);
                 return;
             }
         }
+        */
 
         obj.__dict__[key] = val;
     };

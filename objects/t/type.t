@@ -22,16 +22,14 @@ class type {
     function bases() {
         :(var t, var o) = boot();
 
-        for(var i in o.__dict__) {say(i);};
-
-        self.assert.equal(o.__dict__['__bases__'], [t]);
+        self.assert.equal(o.__dict__['__bases__'], []);
+        self.assert.equal(t.__dict__['__bases__'], [o]);
     }
 
     function set_attr() {
         :(var t, var o) = boot();
 	
         o.a = 42;
-        say(o.__dict__['__name__']);
         self.assert.equal(o.__dict__['a'], 42);
     }
 
@@ -84,7 +82,6 @@ class type {
     }
 
     function object_repr() {
-        self.status.todo('__getattribute__ is broken');
         :(var t, var o) = boot();
         
         self.assert.equal(string(o), "<class 'object'>");
@@ -102,14 +99,21 @@ class type {
         self.assert.same(o.__hash__, t.__dict__['__hash__']);
     }
 
-    function instance_init() {
+    function object_new() {
+        :(var t, var o) = boot();
+        
+        var i = o.__new__(o);
+
+        self.assert.same(i.__class__, o);
+    }
+
+    function instance_create() {
         :(var t, var o) = boot();
 
-        var func = o.__new__;
-        var i = func(o);
-        self.assert.throws_nothing(function(){
-            var a = i.__init__;
-        });
+        var i = o();
+        say(i.__class__.__name__);
+        
+        //self.assert.same(i.__class__, o);
     }
         
     function instance_get() {
@@ -119,6 +123,7 @@ class type {
 
         var func = o.__new__;
         var i = func(o);
+        say(typeof(i));
 
         o.bla = function(obj){return 42;};
 
