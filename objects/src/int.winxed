@@ -1,8 +1,7 @@
 namespace Python {
 
 function int(type, object) {
-    var f = type.__new__;
-    var i = f(type, 'int', [object]);
+    var i = type.__new__(type, 'int', [object]);
 
     i.__new__ = function(cls, int value[optional]) {
         var n = new Python.instance;
@@ -20,8 +19,7 @@ function int(type, object) {
 
     i.__add__ = function(obj, other) {
         var result = obj.__value__ + other.__value__;
-        var f = obj.__new__;
-        return f(obj.__class__, result);
+        return obj.__new__(obj.__class__, result);
     };
 
     return i;

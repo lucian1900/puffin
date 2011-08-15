@@ -44,6 +44,8 @@ function type() {
     t.__str__ = t.__repr__;
 
     t.__getattribute__ = function(obj, key) {
+        cry('key: ' + key);
+
         var cls = obj.__dict__['__class__'];
         var chain = get_mro(cls);
         
@@ -65,7 +67,8 @@ function type() {
 
         // then attr on actual obj
         if(id(cls) != id(t)) { // if obj is a class
-            for(var i in chain) {
+            cry('obj is class');
+            for(var i in get_mro(obj)) {
                 if(exists i.__dict__[key]) {
                     cry('getting from obj or parents');
                     var attr = i.__dict__[key];
@@ -79,6 +82,7 @@ function type() {
                 }
             }
         } else {
+            cry('obj is not class');
             if(exists obj.__dict__[key]) {
                 return obj.__dict__[key];
             }
@@ -92,14 +96,9 @@ function type() {
                 cry('getting from class');
             
                 // only for python objects
-                if(typeof(attr) == 'Python;instance') {
-                    // if data-descriptor
-                    if(exists attr.__dict__['__get__'] && exists attr.__dict__['__set__'])
+                if(typeof(attr) == 'Python;instance')
+                    if(exists attr.__dict__['__get__']) // if non-data descriptor
                         return attr.__dict__['__get__'](attr, obj);
-                    // if non-data descriptor
-                    if(exists attr.__dict__['__get__'])
-                        return attr.__dict__['__get__'](attr, obj);
-                }
 
                 return attr;
             }
