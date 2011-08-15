@@ -44,7 +44,7 @@ function type() {
     t.__str__ = t.__repr__;
 
     t.__getattribute__ = function(obj, key) {
-        cry('key: ' + key);
+        cry(key);
 
         var cls = obj.__dict__['__class__'];
         var chain = get_mro(cls);
@@ -110,17 +110,17 @@ function type() {
     t.__setattr__ = function(obj, key, val) {
         var cls = obj.__dict__['__class__'];
         
-        /* disable data descriptors for now
         if(exists cls.__dict__[key]) {
             var attr = cls.__dict__[key];
 
-            if(exists attr.__dict__['__set__']) {
-                say('using data descriptor');
-                attr.__dict__['__set__'](attr, obj, val);
-                return;
-            }
+            // only for python objects
+            if(typeof(attr) == 'Python;instance')
+                if(exists attr.__dict__['__set__']) {
+                    say('using data descriptor');
+                    attr.__dict__['__set__'](attr, obj, val);
+                    return;
+                }
         }
-        */
 
         obj.__dict__[key] = val;
     };
