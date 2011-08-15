@@ -78,11 +78,11 @@ class instance {
         if(exists dict['__class__']) {
             var cls = dict['__class__'];
 
-            say('looking for __getattribute__');
+            //cry('looking for __getattribute__');
 
             for(var i in get_mro(cls)) {
                 if(exists i.__dict__['__getattribute__']) {
-                    say('calling __getattribute__');
+                    //cry('calling __getattribute__');
                     return i.__dict__['__getattribute__'](self, name);
                 }
             }
@@ -100,11 +100,11 @@ class instance {
         if(exists dict['__class__']) {
             var cls = dict['__class__'];
 
-            say('looking for __setattr__');
+            //cry('looking for __setattr__');
 
             for(var i in get_mro(cls)) {
                 if(exists i.__dict__['__setattr__']) {
-                    say('calling __setattr__');
+                    //cry('calling __setattr__');
 
                     i.__dict__['__setattr__'](self, name, value);
                     return;

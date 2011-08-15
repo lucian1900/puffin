@@ -53,8 +53,10 @@ function type() {
             // only for python objects
             if(typeof(attr) == 'Python;instance')
                 // if data-descriptor
-                if(exists attr.__dict__['__get__'] && exists attr.__dict__['__set__'])
+                if(exists attr.__dict__['__get__'] && exists attr.__dict__['__set__']) {
+                    cry('using data descriptor');
                     return attr.__dict__['__get__'](attr, obj);
+                }
         }
         
         var chain = get_mro(cls);
@@ -66,8 +68,12 @@ function type() {
             // if obj is a class
             if(id(cls) == id(t))
                 for(var i in chain)
-                    if(exists i.__dict__['__get__'])
+                    if(exists i.__dict__['__get__']) {
+                        cry('getting from parents (obj is class)');
                         attr = i.__dict__['__get__'](i, obj);
+
+                        break;
+                    }
 
             return attr;
         }
@@ -76,10 +82,11 @@ function type() {
         for(var i in chain) {
             if(exists i.__dict__[key]) {
                 var attr = i.__dict__[key];
+                
+                cry('getting from class');
             
                 // only for python objects
                 if(typeof(attr) == 'Python;instance') {
-                
                     // if data-descriptor
                     if(exists attr.__dict__['__get__'] && exists attr.__dict__['__set__'])
                         return attr.__dict__['__get__'](attr, obj);
@@ -92,7 +99,7 @@ function type() {
             }
         }
 
-        // throw AttributeError
+        throw 'AttributeError';
     };
 
     t.__setattr__ = function(obj, key, val) {
