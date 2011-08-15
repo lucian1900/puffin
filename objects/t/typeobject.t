@@ -44,9 +44,8 @@ class type {
     function type_init() {
         :(var t, var o) = boot();
 
-        var func = t.__init__;
         self.assert.throws_nothing(function(){
-            func(t);
+            t.__init__(t);
         });
     }
 
