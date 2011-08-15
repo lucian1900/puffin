@@ -23,7 +23,6 @@ function object(type) {
     t.__call__ = function() {
         var n = t.__new__(t);
         //n.__init__(n);
-
         return n;
     };
 
@@ -38,102 +37,6 @@ function object(type) {
             sb.append_format("<%0.%1 object at %2>",
                              obj.__class__.__module__, obj.__class__.__name__, hash(obj));
         return string(sb);
-    };
-
-    t.__getattribute__ = function(obj, key) {
-        var cls = obj.__dict__['__class__'];
-        var chain = get_mro(cls);
-       
-        say('trying data descriptors');
-        // first try descriptor among class attrs
-        for(var i in chain) {
-            if(exists i.__dict__[key]) {
-                var attr = i.__dict__[key];
-
-                // only for python objects
-                if(typeof(attr) == 'Python;instance') {
-
-                    if(exists attr.__dict__['__class__']) {
-                        var attr_cls = i.__dict__['__class__'];
-                        
-                        // if data-descriptor
-                        if(exists attr_cls.__dict__['__get__'] && exists attr_cls.__dict__['__set__']) {
-                            return attr_cls.__dict__['__get__'](cls, obj);
-                        }
-                    }
-                }
-            }
-        }
-
-        //say(cls.__dict__['__name__']);
-        
-        say('trying on actual obj');
-        // then attr on actual obj
-        if(id(cls) == id(type)) { // if is class
-            say('class');
-            for(var i in get_mro(obj)) {
-                if(exists i.__dict__[key]) { // if has attr
-                    var attr = i.__dict__[key];
-                
-                    // only for python objects
-                    if(typeof(attr) == 'Python;instance') {
-                        if(exists attr.__dict__['__class__']) { // if attr has class
-                            var attr_cls = attr.__dict__['__class__'];
-
-                            if(exists attr_cls.__dict__['__get__']) { // if attr is descriptor
-                                say('using data descriptor');
-                                return i.__dict__['__get__'](i, obj);
-                            } else {
-                                return attr;
-                            }
-                        }
-                    }
-                }
-            }
-        } else if(exists obj.__dict__[key]) {
-            say('not class');
-            return obj.__dict__[key];
-        }
-
-        say('data descriptors on class');
-        // then on the obj's class
-        for(var i in chain) {
-            if(exists i.__dict__[key]) {
-                var attr = i.__dict__[key];
-            
-                // only for python objects
-                if(typeof(attr) == 'Python;instance') {
-                
-                    // if descriptor
-                    if(exists attr.__dict__['__get__'])
-                        return attr.__dict__['__get__'](i, obj);
-                }
-
-                return attr;
-            }
-        }
-
-        throw 'AttributeError';
-    };
-
-    t.__setattr__ = function(obj, key, val) {
-        var cls = obj.__dict__['__class__'];
-        
-        if(exists cls.__dict__[key]) {
-            var attr = cls.__dict__[key];
-
-            // only for python objects
-            if(typeof(attr) == 'Python;instance') {
-                if(exists attr.__dict__['__set__']) {
-                    say('using data descriptor');
-                    attr.__dict__['__set__'](attr, obj, val);
-                    return;
-                }
-            }
-        }
-        
-        say('setting on __dict__');
-        obj.__dict__[key] = val;
     };
 
     return t;

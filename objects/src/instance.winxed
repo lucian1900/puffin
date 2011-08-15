@@ -100,11 +100,15 @@ class instance {
         if(exists dict['__class__']) {
             var cls = dict['__class__'];
 
-            for(var i in get_mro(cls)) {
-                if(exists i.__dict__['__setattr__'])
-                    i.__dict__['__setattr__'](self, name, value);
+            say('looking for __setattr__');
 
-                return;
+            for(var i in get_mro(cls)) {
+                if(exists i.__dict__['__setattr__']) {
+                    say('calling __setattr__');
+
+                    i.__dict__['__setattr__'](self, name, value);
+                    return;
+                }
             }
         }
 
