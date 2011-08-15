@@ -44,6 +44,7 @@ function object(type) {
         var cls = obj.__dict__['__class__'];
         var chain = get_mro(cls);
        
+        say('trying data descriptors');
         // first try descriptor among class attrs
         for(var i in chain) {
             if(exists i.__dict__[key]) {
@@ -64,11 +65,12 @@ function object(type) {
             }
         }
 
-        say(cls.__dict__['__name__']);
+        //say(cls.__dict__['__name__']);
         
+        say('trying on actual obj');
         // then attr on actual obj
         if(id(cls) == id(type)) { // if is class
-            //say('class');
+            say('class');
             for(var i in get_mro(obj)) {
                 if(exists i.__dict__[key]) { // if has attr
                     var attr = i.__dict__[key];
@@ -79,6 +81,7 @@ function object(type) {
                             var attr_cls = attr.__dict__['__class__'];
 
                             if(exists attr_cls.__dict__['__get__']) { // if attr is descriptor
+                                say('using data descriptor');
                                 return i.__dict__['__get__'](i, obj);
                             } else {
                                 return attr;
@@ -88,10 +91,11 @@ function object(type) {
                 }
             }
         } else if(exists obj.__dict__[key]) {
-            //say('not class');
+            say('not class');
             return obj.__dict__[key];
         }
 
+        say('data descriptors on class');
         // then on the obj's class
         for(var i in chain) {
             if(exists i.__dict__[key]) {
@@ -109,7 +113,7 @@ function object(type) {
             }
         }
 
-        // throw AttributeError
+        throw 'AttributeError';
     };
 
     t.__setattr__ = function(obj, key, val) {
@@ -127,7 +131,8 @@ function object(type) {
                 }
             }
         }
-
+        
+        say('setting on __dict__');
         obj.__dict__[key] = val;
     };
 

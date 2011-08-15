@@ -97,10 +97,24 @@ class instance {
         self.assert.equal(string(i), '42');
     }
 
-    function call() {
+    function call_class() {
         var i = new Python.instance;
 
-        i.__call__ = function(obj){return 42;};
+        i.__call__ = function(){return 42;};
+
+        self.assert.equal(i(), 42);
+    }
+
+    function call_instance() {
+        var c = new Python.instance;
+        var i = new Python.instance;
+
+        c.__getattribute__ = function(obj, key) {
+            return obj.__dict__['__class__'].__dict__[key];
+        };
+        c.__call__ = function(){return 42;};
+        
+        i.__class__ = c;
 
         self.assert.equal(i(), 42);
     }

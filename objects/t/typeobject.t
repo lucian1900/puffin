@@ -21,9 +21,20 @@ class type {
 
     function bases() {
         :(var t, var o) = boot();
+        for(var i in t.__dict__) say(i);
 
         self.assert.equal(o.__dict__['__bases__'], []);
         self.assert.equal(t.__dict__['__bases__'], [o]);
+    }
+
+    function get_mro() {
+        :(var t, var o) = boot();
+
+        using Python.get_mro;
+        //for(var i in get_mro(t)) say(string(i));
+
+        self.assert.equal(get_mro(t), [t, o]);
+        self.assert.equal(get_mro(o), [o]);
     }
 
     function set_attr() {

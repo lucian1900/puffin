@@ -17,12 +17,10 @@ function in(arr, item) {
 function get_parents(cls) {
     var result = [];
 
-    // if not fully boostrapped yet, don't bother
     if(!exists cls.__dict__['__bases__'])
         return result;
-        
+    
     var bases = cls.__dict__['__bases__'];
-
     result.append(bases);
     
     for(var i in bases) {
@@ -50,20 +48,19 @@ class instance {
     }
 
     function invoke[vtable](var p [slurpy], var n [slurpy,named]) {
-        var sub = self.__call__;
+        var sub = self.__call__; 
 
         // if sub is a parrot Sub, it'll get executed
         // if sub is an instance with __call__, this invoke will get called,
         //   all the way down to a Sub somewhere
-        return sub(self, p:[flat], n:[flat,named]);
+        return sub(p:[flat], n:[flat,named]);
     }
 
     function find_method[vtable](string name) {
-        // likely broken
         using Python.instance.get_pmc_keyed_str;
         var method = self.*get_pmc_keyed_str(name);
 
-        // closure to soak up the obj
+        // closure to soak up the implicit self
         return function(var obj, var p[slurpy], var n[slurpy,named]) {
             return method(p:[flat], n:[flat,named]);
         };
@@ -81,9 +78,14 @@ class instance {
         if(exists dict['__class__']) {
             var cls = dict['__class__'];
 
-            for(var i in get_mro(cls))
-                if(exists i.__dict__['__getattribute__'])
+            say('looking for __getattribute__');
+
+            for(var i in get_mro(cls)) {
+                if(exists i.__dict__['__getattribute__']) {
+                    say('calling __getattribute__');
                     return i.__dict__['__getattribute__'](self, name);
+                }
+            }
         }
 
         return dict[name];
@@ -99,11 +101,10 @@ class instance {
             var cls = dict['__class__'];
 
             for(var i in get_mro(cls)) {
-                if(exists i.__dict__['__setattr__']) {
+                if(exists i.__dict__['__setattr__'])
                     i.__dict__['__setattr__'](self, name, value);
 
-                    return;
-                }
+                return;
             }
         }
 
