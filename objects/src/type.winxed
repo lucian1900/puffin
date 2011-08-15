@@ -19,7 +19,6 @@ function type() {
     };
 
     t.__call__ = function(obj) {
-        say('creating type instance');
         return obj.__class__;
     };
 
@@ -46,31 +45,52 @@ function type() {
 
     t.__getattribute__ = function(obj, key) {
         var cls = obj.__dict__['__class__'];
-        
-        // first try descriptor among class attrs
-        if(exists cls.__dict__[key]) {
-            var attr = cls.__dict__[key];
-   
-            // only for python objects
-            if(typeof(attr) == 'Python;instance')
-                // if data-descriptor
-                if(exists attr.__dict__['__get__'] && exists attr.__dict__['__set__'])
-                    return attr.__dict__['__get__'](attr, obj);
-        }
-        
         var chain = get_mro(cls);
+       
+        // first try descriptor among class attrs
+        for(var i in chain) {
+            if(exists i.__dict__[key]) {
+                var attr = i.__dict__[key];
 
+                // only for python objects
+                if(typeof(attr) == 'Python;instance') {
+
+                    if(exists attr.__dict__['__class__']) {
+                        var attr_cls = i.__dict__['__class__'];
+                        
+                        // if data-descriptor
+                        if(exists attr_cls.__dict__['__get__'] && exists attr_cls.__dict__['__set__']) {
+                            return attr_cls.__dict__['__get__'](cls, obj);
+                        }
+                    }
+                }
+            }
+        }
+
+        //say(cls.__dict__['__name__']);
+        
         // then attr on actual obj
-        if(exists obj.__dict__[key]) {
-            var attr = obj.__dict__[key];
+        if(id(cls) == id(t)) { // if is class
+            say('class');
+            for(var i in get_mro(obj)) {
+                if(exists i.__dict__[key]) { // if has attr
+                    var attr = i.__dict__[key];
+                
+                    // only for python objects
+                    if(typeof(attr) == 'Python;instance') {
+                        if(exists attr.__dict__['__class__']) { // if attr has class
+                            var attr_cls = attr.__dict__['__class__'];
 
-            // if obj is a class
-            if(id(cls) == id(t))
-                for(var i in chain)
-                    if(exists i.__dict__['__get__'])
-                        attr = i.__dict__['__get__'](i, obj);
-
-            return attr;
+                            if(exists attr_cls.__dict__['__get__']) { // if attr is descriptor
+                                return i.__dict__['__get__'](i, obj);
+                            }
+                        }
+                    }
+                }
+            }
+        } else if(exists obj.__dict__[key]) {
+            say('not class');
+            return obj.__dict__[key];
         }
 
         // then on the obj's class
@@ -81,12 +101,9 @@ function type() {
                 // only for python objects
                 if(typeof(attr) == 'Python;instance') {
                 
-                    // if data-descriptor
-                    if(exists attr.__dict__['__get__'] && exists attr.__dict__['__set__'])
-                        return attr.__dict__['__get__'](attr, obj);
-                    // if non-data descriptor
+                    // if descriptor
                     if(exists attr.__dict__['__get__'])
-                        return attr.__dict__['__get__'](attr, obj);
+                        return attr.__dict__['__get__'](i, obj);
                 }
 
                 return attr;

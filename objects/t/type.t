@@ -118,28 +118,22 @@ class type {
     function instance_get() {
         :(var t, var o) = boot();
 
-        var func = o.__new__;
-        var i = func(o);
-        say(typeof(i));
+        var i = o.__new__(o);
 
-        o.bla = function(obj){return 42;};
+        o.bla = 42;
 
-        func = i.bla;
-        say(func == null);
-        self.assert.same(i.bla, i.__class__.__dict__['bla']);
+        say(i.bla == null);
+        self.assert.same(i.bla, o.__dict__['bla']);
     }
 
     function instance_class_get() {
-        self.status.todo('__getattribute__ broken for now.');
-
         :(var t, var o) = boot();
 
-        var func = o.__new__;
-        var i = func(o);
+        var i = o.__new__(o);
 
-        t.bla = function(){};
+        t.bla = 42;
 
-        self.assert.same(i.bla, i.__class__.__class__.__dict__['bla']);
+        self.assert.same(i.bla, t.__dict__['bla']);
     }
 
     function type_set_attr() {
