@@ -147,6 +147,27 @@ class instance {
         
         return string(id(self));
     }
+
+    function get_bool[vtable] () {
+        var bool = self.__bool__;
+
+        if(bool != null) return bool(self);
+
+        return true;
+    }
+
+    function get_integer[vtable] () {
+        var cls = self.__class__;
+        if(cls != null) {
+            var name = cls.__name__;
+
+            if(name != null && name == 'int')
+                return self.__value__;
+        }
+    
+        var bool = self.__bool__;
+        if(bool != null) return bool(self);
+    }
 }
 
 }

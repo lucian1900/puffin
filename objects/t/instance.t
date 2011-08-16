@@ -90,11 +90,37 @@ class instance {
         self.assert.equal(i.f(1, 2), 3);
     }
 
-    function get_string() {
+    function get_string_override() {
         var i = new Python.instance;
         i.__repr__ = function(obj) {return '42';};
 
         self.assert.equal(string(i), '42');
+    }
+
+    function get_bool_default() {
+        var i = new Python.instance;
+
+        self.assert.is_true(i ? 1 : 0);
+    }
+
+    function get_bool_from_int_default() {
+        var i = new Python.instance;
+
+        self.assert.is_true(i);
+    }
+
+    function get_bool_override() {
+        var i = new Python.instance;
+        i.__bool__ = function(obj) {return false;};
+
+        self.assert.is_false(i ? 1 : 0);
+    }
+
+    function get_bool_from_int_override() {
+        var i = new Python.instance;
+        i.__bool__ = function(obj) {return false;};
+
+        self.assert.is_false(i);
     }
 
     function call_class() {

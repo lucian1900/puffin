@@ -1,5 +1,23 @@
 namespace Python {
 
+function get_class_attr(cls, key, obj) {
+   for(var i in get_mro(cls)) {
+        if(exists i.__dict__[key]) {
+            var attr = i.__dict__[key];
+
+            // only for python objects
+            if(typeof(attr) == 'Python;instance')
+                if(exists attr.__dict__['__get__']) {
+                    return attr.__dict__['__get__'](attr, obj);
+                }
+
+            return attr;
+        }
+    }
+
+    return null;
+}
+
 function type() {
     var t = new Python.instance;
 
@@ -36,7 +54,7 @@ function type() {
             else
                 sb.append_format("<class '%0.%1'>", obj.__module__, obj.__name__);
         else
-            return null; //TypeError
+            throw 'TypeError';
         
         return string(sb);
     };
@@ -49,6 +67,7 @@ function type() {
         var cls = obj.__dict__['__class__'];
         var chain = get_mro(cls);
         
+        cry('trying descriptor in class attrs');    
         // first try descriptor among class attrs
         for(var i in chain) {
             if(exists i.__dict__[key]) {
@@ -58,18 +77,20 @@ function type() {
                 if(typeof(attr) == 'Python;instance')
                     // if data-descriptor
                     if(exists attr.__dict__['__get__'] && exists attr.__dict__['__set__']) {
-                        cry('using data descriptor');
+                        //cry('using data descriptor');
                         return attr.__dict__['__get__'](attr, obj);
                     }
             }
         }
 
+        cry('trying on actual obj');
         // then attr on actual obj
         if(id(cls) == id(t)) { // if obj is a class
-            cry('obj is class');
+            //cry('obj is class');
+            
             for(var i in get_mro(obj)) {
                 if(exists i.__dict__[key]) {
-                    cry('getting from obj or parents');
+                    //cry('getting from obj or parents');
                     var attr = i.__dict__[key];
 
                     // only for python objects
@@ -82,14 +103,19 @@ function type() {
                     return attr;
                 }
             }
+            
+            //var attr = get_class_attr(obj, key, obj);
+            //if(attr) return attr;
         } else {
-            cry('obj is not class');
+            //cry('obj is not class');
             if(exists obj.__dict__[key]) {
                 return obj.__dict__[key];
             }
         }
 
+        cry('trying on obj class');
         // then on the obj's class
+        
         for(var i in chain) {
             if(exists i.__dict__[key]) {
                 var attr = i.__dict__[key];
@@ -104,6 +130,9 @@ function type() {
                 return attr;
             }
         }
+
+        //var attr = get_class_attr(cls, key, obj);
+        //if(attr) return attr;
 
         throw 'AttributeError';
     };

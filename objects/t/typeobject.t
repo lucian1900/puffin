@@ -117,7 +117,7 @@ class type {
     function object_new() {
         :(var t, var o) = boot();
         
-        var i = o.__new__(o);
+        var i = o();
 
         self.assert.same(i.__class__, o);
     }
@@ -129,21 +129,30 @@ class type {
         
         self.assert.same(i.__class__, o);
     }
-        
+ 
+    function instance_get() {
+        :(var t, var o) = boot();
+
+        var i = o();
+        i.bla = 2;
+
+        self.assert.same(i.bla, i.__dict__['bla']);
+    }
+       
     function instance_class_get() {
         :(var t, var o) = boot();
 
-        var i = o.__new__(o);
+        var i = o();
 
         o.bla = 42;
-
+        
         self.assert.same(i.bla, o.bla);
     }
 
     function instance_parent_get() {
         :(var t, var o) = boot();
 
-        var i = o.__new__(o);
+        var i = o();
 
         t.bla = 42;
 
@@ -160,7 +169,7 @@ class type {
     function instance_set_attr() {
         :(var t, var o) = boot();
 
-        var i = o.__new__(o);
+        var i = o();
         i.foo = 'bar';
 
         self.assert.equal(i.foo, 'bar');
@@ -169,7 +178,7 @@ class type {
     function non_data_descriptor() {
         :(var t, var o) = boot();
 
-        var i = o.__new__(o);
+        var i = o();
         i.__get__ = function(obj, attr) {return 42;};
         t.i = i;
 
