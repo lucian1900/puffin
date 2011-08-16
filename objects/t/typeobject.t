@@ -120,21 +120,20 @@ class type {
 
         var i = o();
         
-        self.assert.same(i.__class__, o); // it's t instead of o for some reason
+        self.assert.same(i.__class__, o);
     }
         
-    function instance_get() {
+    function instance_class_get() {
         :(var t, var o) = boot();
 
         var i = o.__new__(o);
 
         o.bla = 42;
 
-        say(i.bla == null);
         self.assert.same(i.bla, o.__dict__['bla']);
     }
 
-    function instance_class_get() {
+    function instance_parent_get() {
         :(var t, var o) = boot();
 
         var i = o.__new__(o);

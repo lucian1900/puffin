@@ -44,7 +44,7 @@ function type() {
     t.__str__ = t.__repr__;
 
     t.__getattribute__ = function(obj, key) {
-        cry(key);
+        cry(string(key));
 
         var cls = obj.__dict__['__class__'];
         var chain = get_mro(cls);
