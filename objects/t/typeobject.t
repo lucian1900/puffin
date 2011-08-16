@@ -53,7 +53,7 @@ class type {
         :(var t, var o) = boot();
 
         self.assert.throws('AttributeError', function() {
-            var a = t.bla;
+            var a = o.bla;
         });
     }
 

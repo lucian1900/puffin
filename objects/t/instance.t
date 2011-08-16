@@ -105,6 +105,14 @@ class instance {
         self.assert.equal(i(), 42);
     }
 
+    function call_class_fail() {
+        var i = new Python.instance;
+
+        self.assert.throws('TypeError', function(){
+            i();
+        });
+    }
+
     function call_instance() {
         var c = new Python.instance;
         var i = new Python.instance;

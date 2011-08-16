@@ -55,13 +55,12 @@ function type() {
                 var attr = i.__dict__[key];
    
                 // only for python objects
-                if(typeof(attr) == 'Python;instance') {
+                if(typeof(attr) == 'Python;instance')
                     // if data-descriptor
                     if(exists attr.__dict__['__get__'] && exists attr.__dict__['__set__']) {
                         cry('using data descriptor');
                         return attr.__dict__['__get__'](attr, obj);
                     }
-                }
             }
         }
 
