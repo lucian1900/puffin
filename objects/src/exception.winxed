@@ -1,17 +1,18 @@
 namespace Python {
 
 function exception(type, object) {
-    var i = type.__new__(type, 'BaseException', [object]);
-
-    i.__new__ = function(cls) {
+    var f = type.__new__;
+    var t = f(type, 'BaseException', [object]);
+    
+    t.__new__ = function(cls) {
         var n = new Python.instance;
         n.__class__ = cls;
         n.__value__ = new 'Exception';
 
         return n;
     };
-
-    return i;
+   
+    return t;
 }
 
 }

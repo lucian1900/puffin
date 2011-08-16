@@ -14,7 +14,7 @@ function excls() {
 
 class exception {
     function init() {
-        var e = excls();
+        excls();
     }
 
     function throw() {
