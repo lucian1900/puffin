@@ -48,7 +48,9 @@ class int {
         var f = i.__new__;
         var a = f(i, 1);
 
-        self.assert.equal(a.__repr__(a), '1');
+        f = i.__repr__;
+
+        self.assert.equal(f(a), '1');
     }
 
     function add() {
