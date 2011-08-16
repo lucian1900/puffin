@@ -65,17 +65,19 @@ function type() {
         }
 
         // then attr on actual obj
-        if(id(cls) != id(t)) { // if obj is a class
+        if(id(cls) == id(t)) { // if obj is a class
             cry('obj is class');
             for(var i in get_mro(obj)) {
                 if(exists i.__dict__[key]) {
                     cry('getting from obj or parents');
                     var attr = i.__dict__[key];
 
-                    if(exists attr.__dict__['__get__']) {
-                        cry('using data descriptor');
-                        return attr.__dict__['__get__'](attr, obj);
-                    }
+                    // only for python objects
+                    if(typeof(attr) == 'Python;instance')
+                        if(exists attr.__dict__['__get__']) {
+                            cry('using data descriptor');
+                            return attr.__dict__['__get__'](attr, obj);
+                        }
 
                     return attr;
                 }
