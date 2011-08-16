@@ -21,36 +21,46 @@ class int {
 
     function create() {
         var i = intcls();
+        var f = i.__new__;
     
-        self.assert.equal(i.__new__(i, 2).__value__, 2);
+        self.assert.equal(f(i, 2).__value__, 2);
     }
 
     function create_zero() {
         var i = intcls();
+        var f = i.__new__;
 
-        self.assert.equal(i.__new__(i).__value__, 0);
+        self.assert.equal(f(i).__value__, 0);
     }
 
     function create_one() {
         var i = intcls();
 
-        var a = i.__new__(i, 1);
+        var f = i.__new__;
+        var a = f(i, 1);
+
         self.assert.equal(a.__value__, 1);
     }
 
     function repr() {
         var i = intcls();
-        var a = i.__new__(i, 1);
+
+        var f = i.__new__;
+        var a = f(i, 1);
 
         self.assert.equal(a.__repr__(a), '1');
     }
 
     function add() {
         var i = intcls();
-        var a = i.__new__(i, 20); 
-        var b = i.__new__(i, 22);
 
-        var r = i.__add__(a, b);
+        var f = i.__new__;
+        
+        var a = f(i, 20); 
+        var b = f(i, 22);
+
+        var add = i.__add__;
+        var r = add(a, b);
         self.assert.equal(r.__value__, 42);
     }
 }
