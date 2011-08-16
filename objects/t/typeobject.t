@@ -49,6 +49,13 @@ class type {
         self.assert.equal(o.a, 42);
     }
 
+    function get_attr_fail() {
+        :(var t, var o) = boot();
+
+        self.assert.throws('AttributeError', function() {
+            var a = t.bla;
+        });
+    }
 
     function type_init() {
         :(var t, var o) = boot();
@@ -130,7 +137,7 @@ class type {
 
         o.bla = 42;
 
-        self.assert.same(i.bla, o.__dict__['bla']);
+        self.assert.same(i.bla, o.bla);
     }
 
     function instance_parent_get() {
@@ -140,7 +147,7 @@ class type {
 
         t.bla = 42;
 
-        self.assert.same(i.bla, t.__dict__['bla']);
+        self.assert.same(i.bla, t.bla);
     }
 
     function type_set_attr() {
