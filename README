@@ -1,10 +1,46 @@
+Folder structure:
+objects/ - object system. mostly builtins
+
+The object system is written in Winxed, and uses Parrot's Object/Class. All Python objects are instances of Python.instance.
+
+There are three bootstrapping stages:
+
+stage 1) objects/src/instance.winxed
+Python.instance implements very basic python-like behaviour, and provides overrides for interop purposes (like get_attr* or get_string). It has a __dict__ attribute which is a Parrot Hash which stores all other attributes (inccluding itself). get_attr*/set_attr* look for attributes in said __dict__. Furthermore, they look for __getattribute__/__setattr__ attributes to override themselves up the inheritance chain.
+There are also some utility functions:
+ - id (unique id for all objects)
+ - in (inclusion check)
+ - get_parents,get_mro (get the MRO chain using a simple implementation of C3).
+
+stage 2) objects/src/(type,object,int,function,...).winxed
+type is the class of all classes. object is the base of all classes, including type. They're both instances of Python.instance, and type implements __getattribute__ and __setattr__ for correct python behaviour. They walk the inheritance chains correctly and fully implement python descriptors, which are used a lot in python (in particular for bound methods and properties).
+They also provide other essential methods (__new__, __repr__, __init__, ...).
+
+stage 3)
+The way stage 2 set things up, Python behaviour is mostly set up correctly. CPython doesn't do more than that (in fact it does a little less than puffin's stage 2 in some ways). However, it would be nice for all of Python's base types to actually use those python base types. And since they're already bootstrapped, it's not even hard.
+For example, since 'function' is exposed to app-level code and takes in a parrot sub as an argument, it is possible to wrap all methods in the object system defined so far in actual python methods. The same can be done for tuples and dicts (like __mro__ and __dict__).
+
+
+
+puffin/  - python3-to-pir compiler
+
+The compiler uses the 'ast' module to parse python code and walks the resulting AST to generate PIR. It can handle assignment, ints, addition and functions. It uses the object system for all python objects, so if completed it would be a correct implementation of Python3.
 Puffin has two main components:
  - the object system in objects/
  - the compiler in puffin/
+
+
+
 
 To build and run the tests on the object system, do this:
 
 ./setup.py buildp
 ./setup.py testp
 
+or
+
+cd objects
+
+./setup.winxed build
+./setup.winxed test
 
