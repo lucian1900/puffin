@@ -40,6 +40,8 @@ class ParrotBuild(ParrotCommand):
 class ParrotClean(ParrotCommand):
     command = 'clean'
 
+class ParrotTest(ParrotCommand):
+    command = 'test'
 
 setup(
     name = 'puffin',
